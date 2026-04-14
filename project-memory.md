@@ -1,0 +1,86 @@
+# Project Memory
+Last updated: 2026-04-10
+
+This file captures decisions, reasoning, and session context that
+project-context.md doesn't hold. It is Claude's memory between sessions.
+
+---
+
+## Key decisions (permanent record)
+
+- 2026-04-10 — Project initialized
+- 2026-04-10 — Architecture decision: Static frontend (localStorage + URL sharing, no backend) — simplest path, no accounts needed, shareable URLs handle cross-user sharing
+- 2026-04-10 — Tech stack chosen: vanilla HTML/CSS/JS, localStorage, Vercel — keep it simple, no framework, build on existing single-file app
+
+---
+
+## Sessions
+
+## Session — 2026-04-13 (second session)
+
+**Focus:** Save/Load system, edit-mode Skills tab, adjustable Sanity/Breaking Point, load bug fix.
+
+**Decisions made:**
+- Weapons & Equipment sheet section moved to after 12 — Psychological Data (user confirmed correct order)
+- Save/Load uses localStorage keyed by character name (`dg_characters` object); Load button lives in the dg-header (top-right, always visible); Save button lives on the Sheet panel next to Print
+- `isEditMode` flag (default false) set to true when `loadCharacter()` is called; controls branching in renderBonusSkills() and updateDerived()
+- Bonus Skills tab relabels to "Skills" in edit mode — nav button innerHTML updated directly via `step-btn-bonus` id
+- Edit-mode Skills tab: no allocation budget, +/- 1 buttons, counter shows net change since last save, cap raises from 80 to 99; separate `skillEdits` object (distinct from creation `bonusAdded`)
+- Sanity and Breaking Point show +/- 1 buttons in edit mode; stored as `sanOverride` / `bpOverride` (null = use POW formula); Breaking Point box includes "↺ Recalc BP" button
+- `recalcBP()` formula: BP = current SAN − POW score (official Delta Green rule for post-damage recalculation)
+- Load bug root cause: `onclick="loadCharacter(${JSON.stringify(name)})"` — JSON.stringify produces double-quoted strings which immediately closed the double-quoted onclick HTML attribute, silently breaking the handler. Fixed by switching to single-quoted onclick attributes.
+
+**Problems solved:**
+- Load button did nothing — caused by double-quote collision between onclick attribute and JSON.stringify output; fixed with single-quoted onclick attributes
+
+**Files changed this session:**
+- delta_green_character_creator.html — all changes
+
+## Session — 2026-04-13
+
+**Focus:** Rules accuracy (profession data from official source), stat auto-assignment into priority stats, Equipment step, weapons section on character sheet.
+
+**Decisions made:**
+- Profession data rewritten to match Agent's Handbook via pigeon-labs-stack/DELTA-GREEN-STATS/professions.js — previous entries had wrong bond counts, wrong skill values, wrong optional lists
+- Renamed professions: Firefighter/Paramedic → Firefighter, Journalist → Media Specialist, Lawyer → Lawyer or Business Executive, Pilot → Pilot or Sailor, Soldier + Marine → Soldier or Marine, Nurse → Nurse or Paramedic
+- Removed Marine and Sailor as standalone professions (merged into combined entries)
+- Added Program Manager as new profession (from official source)
+- Added ART_OPTIONS constant and `art` free-type handling for Media Specialist and Program Manager
+- Quick Assign and Roll 4D6 now sort values descending and assign highest to priority stats first — non-priority stats fill in natural STAT_KEYS order (STR/CON/DEX/INT/POW/CHA)
+- Roll 4D6 now calls `setArray()` instead of assigning directly, so it inherits the same priority-stat logic
+- Added Equipment as step 06 (between Bonus Skills and Sheet); Sheet moved to step 07 / panel6
+- Weapons data model has 8 fields: name, skill, range, damage, ap (armor piercing), lethality, killRadius, ammo
+- WEAPONS_DB pre-populated with 16 weapons; GEAR_LIST has 27 common field items
+- Character sheet section 16 matches official layout: note bar about body armor, columns Weapon / Skill % / Base Range / Damage / Armor Piercing / Lethality % / Kill Radius / Ammo, always ≥7 rows (a–g), empty rows with subtle fill
+- Skill % on sheet is auto-calculated from the character's current profession + bonus skills via `getSkillTotal()`
+- Print CSS updated: #panel5 → #panel6 for sheet printing
+
+**Files changed this session:**
+- delta_green_character_creator.html — all changes (professions rewrite, stat priority assignment, Equipment step, weapons sheet section)
+
+## Session — 2026-04-10
+
+**Focus:** Adding remaining professions, swapping step order (Profession before Statistics), stat suggestions per profession, fixing PDF/print blank page.
+
+**Decisions made:**
+- Profession moved to step 02, Statistics to step 03 — so profession choice informs stat allocation
+- Suggested priority stats added per profession (e.g. STR/CON/DEX for Soldier) — highlighted visually on the stats panel with green border and PRIORITY tag
+- Print fix: CSS custom properties don't reliably re-evaluate inside @media print, so all sheet colors replaced with explicit hex values in the print block
+- `print-color-adjust: exact` added to force browsers to print background colors (green header, skill highlights, derived boxes)
+- Print button now calls `renderSheet()` before `window.print()` to guarantee content is rendered
+- `body::before` scanline overlay and `.dg-header` hidden in print
+- PILOT_OPTIONS constant added (`Fixed-Wing Aircraft`, `Helicopter`, `Boat`, `Other`) — same subtype pattern as Military Science
+
+**Problems solved:**
+- PDF/print blank page — caused by CSS variables not resolving in print context; fixed with explicit hex overrides per element
+- Step panel/nav mismatch after reorder — all `goStep()` references, button labels, and nav button text updated to match new order
+
+**Files changed this session:**
+- delta_green_character_creator.html — all changes (professions, step reorder, stat hints, print fix)
+- project-context.md — created
+- project-memory.md — created
+- .claude/commands/new-project.md — created
+- .claude/commands/start-of-day.md — created
+- .claude/commands/end-of-day.md — created
+
+<!-- end-of-day skill appends new sessions here -->
