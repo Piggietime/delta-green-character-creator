@@ -16,6 +16,25 @@ project-context.md doesn't hold. It is Claude's memory between sessions.
 
 ## Sessions
 
+## Session — 2026-04-14
+
+**Focus:** What's Next list — worked through all remaining to-do items in order.
+
+**Decisions made:**
+- Share via URL: character encoded as base64 in `?c=` URL param; import banner shown at top of page when shared URL is opened; `buildCharData()` extracted as shared helper used by both Save and Share
+- Git repo initialized with local identity (`delta-green@local`); initial commit `15d20c5` includes all project files
+- Edit mode gaps: `bondScores[]` parallel array tracks current bond score (capped 0–CHA); `hpOverride` follows same null=formula pattern as SAN/BP; `newCharacter()` resets all state and returns to step 01 with confirmation prompt
+- Improvement rolls: `tickedSkills` object (session-only, not persisted); `toggleTick()` updates DOM in-place without full re-render to preserve scroll; `rollImprovements()` rolls d100 per ticked skill, adds 1d6 on success (roll > current %); results stored in `lastImprovementResults` and rendered at bottom of Skills panel on next render
+- Overwrite warning: `saveCharacter()` checks if name key already exists in localStorage before writing; prompts confirm dialog if so
+- JSON export: `exportToJSON()` uses Blob + object URL download; filename sanitized from agent name
+- JSON import: file input hidden in load modal header; `importFromJSON()` validates `personal` and `stats` fields before applying; loads into edit mode
+- Fillable current-value boxes: derived attributes now show starting/max value prominently + "Current: ___" underlined write-in box; edit-mode overrides pre-fill the box; WP always blank; new characters get all blank boxes
+- Gear notes on sheet: gear items switched from flex-wrap to 2-column grid; right column is a `.sheet-gear-note-line` underline for qty/condition notes
+
+**Files changed this session:**
+- delta_green_character_creator.html — all changes (URL sharing, git init, edit mode gaps, improvement rolls, save/load QoL, sheet improvements)
+- project-context.md — What's next updated throughout session
+
 ## Session — 2026-04-13 (second session)
 
 **Focus:** Save/Load system, edit-mode Skills tab, adjustable Sanity/Breaking Point, load bug fix.

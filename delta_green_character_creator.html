@@ -512,7 +512,17 @@
   .sheet-derived-cell:last-child { border-right: none; }
   .sheet-derived-k { font-size: 9px; color: var(--text3); letter-spacing: 1px; }
   .sheet-derived-v { font-family: var(--head); font-size: 22px; color: var(--amber); }
-  .sheet-current-v { font-size: 11px; color: var(--text3); }
+  .sheet-current-v { font-size: 10px; color: var(--text3); display: flex; align-items: center; justify-content: center; gap: 5px; }
+  .sheet-current-box {
+    display: inline-block;
+    min-width: 36px;
+    border-bottom: 1px solid var(--border2);
+    text-align: center;
+    font-family: var(--head);
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
   .sheet-bond-row {
     display: flex;
     justify-content: space-between;
@@ -620,8 +630,10 @@
   }
   .sheet-weapon-label { color: var(--text3); font-size: 10px; margin-right: 4px; }
   .sheet-weapon-empty td { background: rgba(255,255,255,0.02); min-height: 22px; height: 22px; }
-  .sheet-gear-row { padding: 8px 14px; font-family: var(--mono); font-size: 11px; color: var(--text2); display: flex; flex-wrap: wrap; gap: 4px 20px; }
+  .sheet-gear-grid { display: grid; grid-template-columns: 1fr 80px; gap: 0; padding: 6px 14px; }
+  .sheet-gear-item { font-family: var(--mono); font-size: 11px; color: var(--text2); padding: 3px 0; }
   .sheet-gear-item::before { content: '▸ '; color: var(--green-dim); }
+  .sheet-gear-note-line { border-bottom: 1px solid var(--border); margin: 4px 0 4px 8px; }
   .sheet-gear-notes { padding: 6px 14px; font-family: var(--mono); font-size: 11px; color: var(--text2); border-top: 1px solid var(--border); }
 
   @media print {
@@ -663,6 +675,7 @@
     .sheet-derived-k { color: #555 !important; }
     .sheet-derived-v { color: #7a5800 !important; }
     .sheet-current-v { color: #666 !important; }
+    .sheet-current-box { border-bottom: 1px solid #888 !important; color: #333 !important; }
 
     /* Bonds */
     .sheet-bond-row { border-bottom: 1px solid #ccc !important; color: #111 !important; }
@@ -685,10 +698,87 @@
     .sheet-weapon-table td { color: #111 !important; border-bottom: 1px solid #ccc !important; border-right: 1px solid #ccc !important; }
     .sheet-weapon-empty td { background: #f5f5fc !important; }
     .sheet-weapon-label { color: #666 !important; }
-    .sheet-gear-row { color: #333 !important; }
+    .sheet-gear-grid { padding: 6px 14px !important; }
+    .sheet-gear-item { color: #333 !important; }
     .sheet-gear-item::before { color: #2a6008 !important; }
+    .sheet-gear-note-line { border-bottom: 1px solid #bbb !important; }
     .sheet-gear-notes { color: #333 !important; border-top: 1px solid #ccc !important; }
   }
+
+  /* ── Improvement Rolls ── */
+  .skills-header-edit { grid-template-columns: 28px 1fr 70px 70px 90px; }
+  .skill-row-edit     { grid-template-columns: 28px 1fr 70px 70px 90px; }
+  .tick-btn {
+    width: 22px; height: 22px;
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    padding: 0;
+  }
+  .tick-btn.ticked { border-color: var(--amber); color: var(--amber); background: rgba(200,168,64,0.12); }
+  .improve-btn {
+    margin-top: 1.25rem;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all .15s;
+  }
+  .improve-btn:hover:not(:disabled) { background: rgba(200,168,64,0.1); }
+  .improve-btn:disabled { border-color: var(--border2); color: var(--text3); cursor: default; }
+  .improvement-results { margin-top: 1rem; border: 1px solid var(--border); font-family: var(--mono); }
+  .improvement-results-hdr {
+    background: var(--bg3);
+    padding: 6px 10px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--amber);
+    border-bottom: 1px solid var(--border);
+  }
+  .improvement-result-row {
+    display: grid;
+    grid-template-columns: 1fr 120px 90px;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .improvement-result-row:last-child { border-bottom: none; }
+  .result-improved { color: var(--green); text-align: right; }
+  .result-failed   { color: var(--text3); text-align: right; }
+  .result-roll     { color: var(--text3); text-align: center; }
+
+  /* ── New Character button ── */
+  .new-char-btn {
+    position: absolute;
+    top: 1rem;
+    right: 9.5rem;
+    background: transparent;
+    border: 1px solid var(--text3);
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .new-char-btn:hover { border-color: var(--red); color: var(--red); background: rgba(192,64,64,0.08); }
+
+  /* ── Bond edit row ── */
+  .bond-row-edit { grid-template-columns: 1fr auto; }
+  .bond-score-ctrl { display: flex; align-items: center; gap: 6px; }
 
   /* ── Derived Adjust (edit mode) ── */
   .derived-adj { display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -785,6 +875,18 @@
     position: sticky;
     top: 0;
   }
+  .load-modal-import-btn {
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .load-modal-import-btn:hover { border-color: var(--green); color: var(--green); }
   .load-modal-close {
     background: none;
     border: none;
@@ -899,6 +1001,7 @@
     <div class="dg-logo">DELTA GREEN</div>
     <div class="dg-subtitle">AGENT DOCUMENTATION SYSTEM</div>
     <div class="dg-class">TOP SECRET // ORCON // SPECIAL ACCESS REQUIRED</div>
+    <button class="new-char-btn" onclick="newCharacter()">✦ New Agent</button>
     <button class="load-btn" onclick="openLoadModal()">⬆ Load Agent</button>
   </div>
 
@@ -1045,7 +1148,7 @@
   <!-- PANEL 6: Character Sheet -->
   <div id="panel6" class="panel">
     <div id="sheet-output"></div>
-    <button class="print-btn" onclick="renderSheet();window.print()">⎙ Print / Save as PDF</button><button class="save-btn" onclick="saveCharacter(this)">💾 Save Character</button><button class="share-btn" onclick="generateShareURL(this)">🔗 Share</button>
+    <button class="print-btn" onclick="renderSheet();window.print()">⎙ Print / Save as PDF</button><button class="save-btn" onclick="saveCharacter(this)">💾 Save Character</button><button class="share-btn" onclick="generateShareURL(this)">🔗 Share</button><button class="share-btn" onclick="exportToJSON()" style="border-color:var(--text2);color:var(--text2)">⬇ Export JSON</button>
     <div class="nav-btns">
       <button class="nav-btn" onclick="goStep(5)">← BACK</button>
     </div>
@@ -1056,9 +1159,13 @@
     <div class="load-modal">
       <div class="load-modal-hdr">
         <span>// LOAD AGENT FILE</span>
-        <button class="load-modal-close" onclick="closeLoadModal()">✕</button>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <button class="load-modal-import-btn" onclick="document.getElementById('json-file-input').click()">⬆ Import JSON</button>
+          <button class="load-modal-close" onclick="closeLoadModal()">✕</button>
+        </div>
       </div>
       <div id="load-modal-list"></div>
+      <input type="file" id="json-file-input" accept=".json" style="display:none" onchange="importFromJSON(this)">
     </div>
   </div>
 
@@ -1079,6 +1186,10 @@ let isEditMode = false;
 let skillEdits = {};
 let sanOverride = null;
 let bpOverride  = null;
+let hpOverride  = null;
+let bondScores  = [];
+let tickedSkills = {};
+let lastImprovementResults = null;
 
 const WEAPONS_DB = [
   {name:'Glock 17 (9mm)',        skill:'Firearms',       range:'15m',  damage:'1D10',   ap:'—', lethality:'—', killRadius:'—', ammo:'17+1'},
@@ -1495,12 +1606,18 @@ function updateDerived() {
   const el = document.getElementById('pts-display');
   el.textContent = rem;
   el.className = 'pts-val' + (rem < 0 ? ' over' : '');
-  const hp  = Math.ceil((stats.STR + stats.CON) / 2);
+  const calcHp = Math.ceil((stats.STR + stats.CON) / 2);
+  const hp  = hpOverride  !== null ? hpOverride  : calcHp;
   const san = sanOverride !== null ? sanOverride : stats.POW * 5;
   const bp  = bpOverride  !== null ? bpOverride  : stats.POW * 4;
-  document.getElementById('d-hp').textContent = hp;
   document.getElementById('d-wp').textContent = stats.POW;
   if(isEditMode) {
+    document.getElementById('d-hp').innerHTML =
+      `<div class="derived-adj">
+        <button class="derived-adj-btn" onclick="adjustHP(-1)">−</button>
+        <span>${hp}</span>
+        <button class="derived-adj-btn" onclick="adjustHP(1)">+</button>
+      </div>`;
     document.getElementById('d-san').innerHTML =
       `<div class="derived-adj">
         <button class="derived-adj-btn" onclick="adjustSan(-1)">−</button>
@@ -1515,9 +1632,17 @@ function updateDerived() {
       </div>
       <button class="recalc-bp-btn" onclick="recalcBP()" title="BP = current SAN − POW">↺ Recalc BP</button>`;
   } else {
+    document.getElementById('d-hp').textContent  = hp;
     document.getElementById('d-san').textContent = san;
     document.getElementById('d-bp').textContent  = bp;
   }
+}
+
+function adjustHP(delta) {
+  const calcHp = Math.ceil((stats.STR + stats.CON) / 2);
+  const cur = hpOverride !== null ? hpOverride : calcHp;
+  hpOverride = Math.min(calcHp, Math.max(0, cur + delta));
+  updateDerived();
 }
 
 function adjustSan(delta) {
@@ -1684,12 +1809,31 @@ function renderBonds() {
   }
   const n = PROFESSIONS[selectedProf].bonds;
   while(bonds.length < n) bonds.push('');
-  bonds = bonds.slice(0,n);
-  document.getElementById('bonds-container').innerHTML = bonds.map((b,i)=>`
-    <div class="bond-row">
-      <input type="text" value="${b}" placeholder="Bond ${i+1} — person or group name" onchange="bonds[${i}]=this.value">
-      <div class="bond-score">${stats.CHA}</div>
-    </div>`).join('');
+  bonds = bonds.slice(0, n);
+  if(isEditMode) {
+    while(bondScores.length < n) bondScores.push(stats.CHA);
+    bondScores = bondScores.slice(0, n);
+    document.getElementById('bonds-container').innerHTML = bonds.map((b,i)=>`
+      <div class="bond-row bond-row-edit">
+        <input type="text" value="${b}" placeholder="Bond ${i+1} — person or group name" onchange="bonds[${i}]=this.value">
+        <div class="bond-score-ctrl">
+          <button class="bonus-btn" onclick="adjustBondScore(${i},-1)">−</button>
+          <span class="bond-score" id="bond-score-${i}">${bondScores[i]}</span>
+          <button class="bonus-btn" onclick="adjustBondScore(${i},1)">+</button>
+        </div>
+      </div>`).join('');
+  } else {
+    document.getElementById('bonds-container').innerHTML = bonds.map((b,i)=>`
+      <div class="bond-row">
+        <input type="text" value="${b}" placeholder="Bond ${i+1} — person or group name" onchange="bonds[${i}]=this.value">
+        <div class="bond-score">${stats.CHA}</div>
+      </div>`).join('');
+  }
+}
+
+function adjustBondScore(i, delta) {
+  bondScores[i] = Math.min(stats.CHA, Math.max(0, (bondScores[i] ?? stats.CHA) + delta));
+  document.getElementById('bond-score-'+i).textContent = bondScores[i];
 }
 
 // ── Bonus Skills / Skills ──────────────────────────
@@ -1699,7 +1843,8 @@ function renderBonusSkills() {
   const content = document.getElementById('bonus-panel-content');
 
   if(isEditMode) {
-    // ── Edit mode: show all skills with +/- 1 buttons ──
+    // ── Edit mode: show all skills with tick + +/- 1 buttons ──
+    const tickCount = Object.values(tickedSkills).filter(Boolean).length;
     const skillRows = allNames.map(sname => {
       const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
       const pv = ps[sname] || 0;
@@ -1709,7 +1854,9 @@ function renderBonusSkills() {
       const isProf = pv > 0;
       const isMod = isProf || added > 0 || edited !== 0;
       const editLabel = edited > 0 ? `+${edited}` : edited < 0 ? `${edited}` : '0';
-      return `<div class="skill-row ${isProf?'prof-skill':''}">
+      const ticked = !!tickedSkills[sname];
+      return `<div class="skill-row skill-row-edit ${isProf?'prof-skill':''}">
+        <button class="tick-btn ${ticked?'ticked':''}" data-tick="${sname}" onclick="toggleTick('${sname}')" title="Mark as used this session">${ticked?'✓':''}</button>
         <span class="skill-name">${sname}${isProf?' ★':''}</span>
         <span class="skill-base">${pv>0?pv+'%':base+'%'}</span>
         <span class="skill-total ${isMod?'modified':''}">${total}%</span>
@@ -1720,13 +1867,29 @@ function renderBonusSkills() {
         </div>
       </div>`;
     }).join('');
+
+    const resultsHtml = lastImprovementResults ? `
+      <div class="improvement-results">
+        <div class="improvement-results-hdr">// SESSION IMPROVEMENT RESULTS</div>
+        ${lastImprovementResults.map(r => `
+          <div class="improvement-result-row">
+            <span>${r.skill}</span>
+            <span class="result-roll">rolled ${r.roll} vs ${r.before}%</span>
+            ${r.gain > 0
+              ? `<span class="result-improved">+${r.gain} → ${r.after}%</span>`
+              : `<span class="result-failed">no change</span>`}
+          </div>`).join('')}
+      </div>` : '';
+
     content.innerHTML = `
       <div class="section-title">Skills</div>
-      <p style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:1rem;letter-spacing:1px">Adjust skill values. Counter shows net change since last save. Green ★ = profession skill.</p>
-      <div class="skills-header">
-        <span>Skill</span><span style="text-align:center">Base</span><span style="text-align:center">Total</span><span style="text-align:center">Adjust</span>
+      <p style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:1rem;letter-spacing:1px">Tick skills used successfully this session, then roll improvements. ★ = profession skill.</p>
+      <div class="skills-header skills-header-edit">
+        <span style="text-align:center">Tick</span><span>Skill</span><span style="text-align:center">Base</span><span style="text-align:center">Total</span><span style="text-align:center">Adjust</span>
       </div>
-      <div>${skillRows}</div>`;
+      <div>${skillRows}</div>
+      <button class="improve-btn" id="improve-btn" onclick="rollImprovements()" ${tickCount===0?'disabled':''}>↻ Roll Session Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)</button>
+      ${resultsHtml}`;
   } else {
     // ── Creation mode: +20 increments, 8 total ──
     const used = Object.values(bonusAdded).reduce((a,b)=>a+b,0);
@@ -1788,6 +1951,49 @@ function editSkill(skill, delta) {
   const newTotal = Math.min(99, Math.max(1, baseTotal + cur + delta));
   skillEdits[skill] = newTotal - baseTotal;
   if(skillEdits[skill] === 0) delete skillEdits[skill];
+  renderBonusSkills();
+}
+
+function toggleTick(skill) {
+  tickedSkills[skill] = !tickedSkills[skill];
+  if(!tickedSkills[skill]) delete tickedSkills[skill];
+  // Update tick button without full re-render
+  const btn = document.querySelector(`[data-tick="${CSS.escape(skill)}"]`);
+  if(btn) {
+    const ticked = !!tickedSkills[skill];
+    btn.classList.toggle('ticked', ticked);
+    btn.textContent = ticked ? '✓' : '';
+  }
+  const tickCount = Object.values(tickedSkills).filter(Boolean).length;
+  const rollBtn = document.getElementById('improve-btn');
+  if(rollBtn) {
+    rollBtn.disabled = tickCount === 0;
+    rollBtn.textContent = `↻ Roll Session Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)`;
+  }
+}
+
+function rollImprovements() {
+  const results = [];
+  Object.keys(tickedSkills).filter(s => tickedSkills[s]).forEach(sname => {
+    const before = getSkillTotal(sname);
+    const roll = Math.ceil(Math.random() * 100);
+    if(roll > before && before < 99) {
+      const gain = Math.ceil(Math.random() * 6);
+      const after = Math.min(99, before + gain);
+      const ps = getProfSkills();
+      const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
+      const pv = ps[sname] || 0;
+      const added = bonusAdded[sname] || 0;
+      const baseTotal = (pv > 0 ? pv : base) + added * 20;
+      skillEdits[sname] = after - baseTotal;
+      if(skillEdits[sname] === 0) delete skillEdits[sname];
+      results.push({skill: sname, roll, before, gain, after});
+    } else {
+      results.push({skill: sname, roll, before, gain: 0, after: before});
+    }
+  });
+  tickedSkills = {};
+  lastImprovementResults = results;
   renderBonusSkills();
 }
 
@@ -1896,7 +2102,8 @@ function toggleGear(item) {
 // ── Character Sheet ──────────────────────────
 function renderSheet() {
   const ps = getProfSkills();
-  const hp = Math.ceil((stats.STR+stats.CON)/2);
+  const calcHp = Math.ceil((stats.STR+stats.CON)/2);
+  const hp = hpOverride !== null ? hpOverride : calcHp;
   const allNames = [...new Set([...ALL_SKILLS.map(s=>s.name),...Object.keys(ps)])].sort();
 
   const skillsHtml = allNames.map(sname => {
@@ -1912,11 +2119,11 @@ function renderSheet() {
     </div>`;
   }).join('');
 
-  const bondsHtml = bonds.filter(b=>b).map(b=>`
-    <div class="sheet-bond-row">
-      <span>${b}</span>
-      <span class="sheet-bond-score">${stats.CHA}</span>
-    </div>`).join('') || '<div class="sheet-bond-row" style="color:var(--text3)">No bonds recorded</div>';
+  const bondsHtml = bonds.map((b,i) => {
+    if(!b) return '';
+    const score = (isEditMode && bondScores[i] !== undefined) ? bondScores[i] : stats.CHA;
+    return `<div class="sheet-bond-row"><span>${b}</span><span class="sheet-bond-score">${score}</span></div>`;
+  }).filter(Boolean).join('') || '<div class="sheet-bond-row" style="color:var(--text3)">No bonds recorded</div>';
 
   document.getElementById('sheet-output').innerHTML = `
   <div class="sheet-wrapper">
@@ -1954,10 +2161,10 @@ function renderSheet() {
     <div class="sheet-section">
       <div class="sheet-section-hdr">09 — Derived Attributes</div>
       <div class="sheet-derived-grid">
-        <div class="sheet-derived-cell"><div class="sheet-derived-k">HIT POINTS (HP)</div><div class="sheet-derived-v">${hp}</div><div class="sheet-current-v">Current: ${hp}</div></div>
-        <div class="sheet-derived-cell"><div class="sheet-derived-k">WILLPOWER (WP)</div><div class="sheet-derived-v">${stats.POW}</div><div class="sheet-current-v">Current: ${stats.POW}</div></div>
-        <div class="sheet-derived-cell"><div class="sheet-derived-k">SANITY (SAN)</div><div class="sheet-derived-v">${sanOverride !== null ? sanOverride : stats.POW*5}</div><div class="sheet-current-v">Current: ${sanOverride !== null ? sanOverride : stats.POW*5}</div></div>
-        <div class="sheet-derived-cell"><div class="sheet-derived-k">BREAKING POINT</div><div class="sheet-derived-v">${bpOverride !== null ? bpOverride : stats.POW*4}</div><div class="sheet-current-v">&nbsp;</div></div>
+        <div class="sheet-derived-cell"><div class="sheet-derived-k">HIT POINTS (HP)</div><div class="sheet-derived-v">${calcHp}</div><div class="sheet-current-v">Current: <span class="sheet-current-box">${hpOverride !== null ? hpOverride : ''}</span></div></div>
+        <div class="sheet-derived-cell"><div class="sheet-derived-k">WILLPOWER (WP)</div><div class="sheet-derived-v">${stats.POW}</div><div class="sheet-current-v">Current: <span class="sheet-current-box"></span></div></div>
+        <div class="sheet-derived-cell"><div class="sheet-derived-k">SANITY (SAN)</div><div class="sheet-derived-v">${stats.POW*5}</div><div class="sheet-current-v">Current: <span class="sheet-current-box">${sanOverride !== null ? sanOverride : ''}</span></div></div>
+        <div class="sheet-derived-cell"><div class="sheet-derived-k">BREAKING POINT</div><div class="sheet-derived-v">${stats.POW*4}</div><div class="sheet-current-v">Current: <span class="sheet-current-box">${bpOverride !== null ? bpOverride : ''}</span></div></div>
       </div>
     </div>
 
@@ -2017,7 +2224,7 @@ function renderSheet() {
           }).join('')}
         </tbody>
       </table>
-      ${Object.keys(gear).length ? `<div class="sheet-gear-row">${Object.keys(gear).map(g=>`<span class="sheet-gear-item">${g}</span>`).join('')}</div>` : ''}
+      ${Object.keys(gear).length ? `<div class="sheet-gear-grid">${Object.keys(gear).map(g=>`<span class="sheet-gear-item">${g}</span><span class="sheet-gear-note-line"></span>`).join('')}</div>` : ''}
       ${gearNotes ? `<div class="sheet-gear-notes">${gearNotes}</div>` : ''}
     </div>
 
@@ -2044,12 +2251,41 @@ function renderSheet() {
 renderStatRows();
 renderProfList();
 
+// ── New Character ──────────────────────────
+function newCharacter() {
+  if((document.getElementById('p-name').value.trim() || selectedProf) &&
+     !confirm('Start a new agent? Unsaved changes will be lost.')) return;
+  stats        = {STR:12,CON:12,DEX:12,INT:12,POW:12,CHA:12};
+  selectedProf = null;
+  profChoices  = {};
+  bonusAdded   = {};
+  bonds        = [];
+  bondScores   = [];
+  weapons      = [];
+  gear         = {};
+  gearNotes    = '';
+  isEditMode   = false;
+  skillEdits   = {};
+  sanOverride  = null;
+  bpOverride   = null;
+  hpOverride   = null;
+  tickedSkills = {};
+  lastImprovementResults = null;
+  ['p-name','p-prof-title','p-employer','p-dob','p-edu','p-phys'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('p-nationality').value = 'American';
+  document.getElementById('p-sex').value = 'F';
+  document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Bonus Skills';
+  goStep(0);
+}
+
 // ── Save / Load ──────────────────────────
 function saveCharacter(btn) {
   const name = document.getElementById('p-name').value.trim() || 'Unnamed Agent';
-  const character = { ...buildCharData(), savedAt: new Date().toISOString() };
   const saves = JSON.parse(localStorage.getItem('dg_characters') || '{}');
-  saves[name] = character;
+  if(saves[name] && !confirm(`"${name}" is already saved. Overwrite?`)) return;
+  saves[name] = { ...buildCharData(), savedAt: new Date().toISOString() };
   localStorage.setItem('dg_characters', JSON.stringify(saves));
   const orig = btn.textContent;
   btn.textContent = '✓ SAVED';
@@ -2114,6 +2350,8 @@ function loadCharacter(name) {
   skillEdits   = {...(c.skillEdits || {})};
   sanOverride  = c.sanOverride  ?? null;
   bpOverride   = c.bpOverride   ?? null;
+  hpOverride   = c.hpOverride   ?? null;
+  bondScores   = [...(c.bondScores || [])];
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
   closeLoadModal();
   goStep(6);
@@ -2125,6 +2363,60 @@ function deleteCharacter(name) {
   delete saves[name];
   localStorage.setItem('dg_characters', JSON.stringify(saves));
   renderLoadList();
+}
+
+// ── JSON Export / Import ──────────────────────────
+function exportToJSON() {
+  const name = document.getElementById('p-name').value.trim() || 'Unnamed Agent';
+  const data = { ...buildCharData(), exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = name.replace(/[^a-z0-9_\-\s]/gi, '').trim().replace(/\s+/g, '_') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importFromJSON(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const c = JSON.parse(e.target.result);
+      if(!c.personal || !c.stats) { alert('Invalid agent file.'); return; }
+      document.getElementById('p-name').value        = c.personal.name || '';
+      document.getElementById('p-prof-title').value  = c.personal.profTitle || '';
+      document.getElementById('p-employer').value    = c.personal.employer || '';
+      document.getElementById('p-nationality').value = c.personal.nationality || '';
+      document.getElementById('p-sex').value         = c.personal.sex || 'F';
+      document.getElementById('p-dob').value         = c.personal.dob || '';
+      document.getElementById('p-edu').value         = c.personal.edu || '';
+      document.getElementById('p-phys').value        = c.personal.phys || '';
+      stats        = {...c.stats};
+      selectedProf = c.selectedProf || null;
+      profChoices  = {...(c.profChoices || {})};
+      bonusAdded   = {...(c.bonusAdded || {})};
+      bonds        = [...(c.bonds || [])];
+      weapons      = [...(c.weapons || [])];
+      gear         = {...(c.gear || {})};
+      gearNotes    = c.gearNotes || '';
+      isEditMode   = true;
+      skillEdits   = {...(c.skillEdits || {})};
+      sanOverride  = c.sanOverride ?? null;
+      bpOverride   = c.bpOverride  ?? null;
+      hpOverride   = c.hpOverride  ?? null;
+      bondScores   = [...(c.bondScores || [])];
+      document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
+      input.value = '';
+      closeLoadModal();
+      goStep(6);
+    } catch(err) {
+      alert('Could not read file — make sure it is a valid agent JSON.');
+    }
+  };
+  reader.readAsText(file);
 }
 
 // ── URL Sharing ──────────────────────────
@@ -2151,6 +2443,8 @@ function buildCharData() {
     skillEdits:  {...skillEdits},
     sanOverride,
     bpOverride,
+    hpOverride,
+    bondScores:  [...bondScores],
   };
 }
 
@@ -2212,6 +2506,8 @@ function importSharedChar() {
   skillEdits   = {...(c.skillEdits || {})};
   sanOverride  = c.sanOverride ?? null;
   bpOverride   = c.bpOverride  ?? null;
+  hpOverride   = c.hpOverride  ?? null;
+  bondScores   = [...(c.bondScores || [])];
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
   dismissImportBanner();
   goStep(6);

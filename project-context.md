@@ -1,5 +1,5 @@
 # Project: Delta Green Character Creator
-Last updated: 2026-04-13 (session 2) by Claude Code
+Last updated: 2026-04-14 by Claude Code
 
 ## What this project is
 A browser-based character creation tool for the Delta Green tabletop RPG. Users
@@ -46,14 +46,30 @@ localStorage save/load, URL-based sharing. Known bug: PDF/print button leads
 to a blank page.
 
 ## Where we left off
-Last commit: N/A — no git repo initialized
-In progress: none
-Branch: N/A — git repo still not initialized
+Last commit: 15d20c5 — Initial commit — Delta Green Character Creator with full wizard, save/load, and URL sharing
+In progress: delta_green_character_creator.html has uncommitted changes (all session work since initial commit)
+Branch: master
 
 ## What's next
-- [ ] Add localStorage save/load — Claude Code
-- [ ] Add share via URL — Claude Code
-- [ ] Initialize git repo
+
+### Edit mode gaps
+- [x] Bond score tracking — adjust each bond's current score in edit mode
+- [x] Current HP tracking — +/− HP in edit mode
+- [x] New Character button — reset to blank sheet without page refresh
+
+### Save/Load quality of life
+- [x] Overwrite warning — confirm before silently overwriting an existing save
+- [x] JSON export/import — download character as .json; import from file
+
+### Sheet
+- [x] Fillable current-value boxes on printed sheet — max/current pairs for HP, SAN, WP, BP
+- [x] Gear notes on sheet — space for quantities/condition next to gear items
+
+### Rules
+- [x] Improvement rolls — roll-over-skill mechanic for post-session advancement in edit mode
+
+### Deployment
+- [ ] Vercel deploy — push repo to GitHub, connect to Vercel
 
 ## File structure
 ```
@@ -94,6 +110,7 @@ Run /end-of-day at the end of every session.
 Browser tasks, desktop automation, file management.
 
 ## Change log
+- 2026-04-14 — URL sharing (?c= base64 param + import banner); git repo initialized; edit mode gaps (bond scores, HP tracking, New Agent button); improvement rolls (tick + d100/1d6 mechanic); save overwrite warning; JSON export/import; fillable current-value boxes on sheet; gear note lines on sheet — Source: Claude Code
 - 2026-04-13 (session 2) — Moved Weapons & Equipment section after Psychological Data on sheet; added localStorage Save/Load with modal; edit-mode Skills tab (relabeled, +/-1 buttons, no budget cap); adjustable Sanity and Breaking Point in edit mode with Recalc BP button; fixed load bug (onclick double-quote collision) — Source: Claude Code
 - 2026-04-13 — Rewrote professions to match Agent's Handbook, priority-stat auto-assignment for Quick Assign and Roll 4D6, added Equipment step (06) with weapons table and gear checklist, added weapons section to character sheet (section 16 with AP/Lethality/Kill Radius columns) — Source: Claude Code
 - 2026-04-10 — Added all professions, swapped step order, stat highlights, fixed PDF/print — Source: Claude Code
