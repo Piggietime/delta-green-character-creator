@@ -6,6 +6,32 @@ project-context.md doesn't hold. It is Claude's memory between sessions.
 
 ---
 
+## Session — 2026-04-15
+
+**Focus:** Character portrait feature — upload and AI generation.
+
+**Decisions made:**
+- Portrait upload feature implemented: FileReader converts uploaded image to base64; stored in `portraitData` state var; included in localStorage saves and JSON export; excluded from URL sharing (base64 too large); displayed in Personal Data section of character sheet with "PHOTO" placeholder when none set
+- AI portrait generation attempted via Pollinations.ai — abandoned due to server blocking requests from localhost (HTTP 500 with message "authenticated users should use enter.pollinations.ai; this legacy endpoint is for anonymous requests only"); incognito window also failed, confirming it is not a cookie issue but a localhost/referrer block
+- Switched to Stable Horde (stablehorde.net) as alternative — free, anonymous, community-run GPU network; uses async polling pattern (POST to submit, GET /check/{id} every 4s, GET /status/{id} when done); image returned as base64 in `generations[0].img`; MIME type detected from base64 magic bytes; still failed to display correctly (broken image link — MIME type detection did not resolve the issue)
+- AI image generation scrapped entirely for now — all Pollinations and Stable Horde code removed; portrait section restored to upload-only
+
+**Approaches discussed:**
+- Pollinations.ai (free, no API key, URL-based): blocked from localhost by their server
+- Stable Horde (free, anonymous API key `0000000000`, async polling): image data returned but could not render correctly in browser
+- NotebookLM and Gemini mentioned by user — clarified neither is an image generator; Gemini API (Imagen) noted as an option requiring an API key
+- Options requiring API keys (DALL-E, Stability AI, Hugging Face, Replicate) discussed but not pursued
+
+**Left unresolved:**
+- AI portrait generation — both services attempted failed; to revisit in a future session with a different approach or service
+
+**Files changed this session:**
+ delta_green_character_creator.html | 490 +++++++++++++++++++++++++++++++++----
+ project-context.md                 |  31 ++-
+ project-memory.md                  |  19 ++
+
+---
+
 ## Key decisions (permanent record)
 
 - 2026-04-10 — Project initialized

@@ -395,6 +395,40 @@
   .bonus-remain { font-family: var(--head); font-size: 26px; color: var(--amber); }
   .bonus-remain.done { color: var(--green); }
 
+  /* ── Portrait ── */
+  .portrait-upload-area {
+    width: 110px; height: 110px;
+    border: 1px dashed var(--border2);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text3);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+    text-align: center; line-height: 1.6;
+    position: relative; overflow: hidden; flex-shrink: 0;
+  }
+  .portrait-upload-area:hover { border-color: var(--green); color: var(--green); }
+  .portrait-upload-area img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+  .portrait-clear-btn {
+    background: none; border: 1px solid var(--border2); color: var(--text3);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+    padding: 4px 8px; cursor: pointer; text-transform: uppercase;
+  }
+  .portrait-clear-btn:hover { border-color: var(--red); color: var(--red); }
+  .sheet-personal-layout { display: flex; }
+  .sheet-personal-fields { flex: 1; min-width: 0; }
+  .sheet-portrait-box {
+    width: 110px; flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    padding: 6px; display: flex; align-items: stretch;
+  }
+  .sheet-portrait-img { width: 100%; object-fit: cover; object-position: center top; }
+  .sheet-portrait-empty {
+    width: 100%; border: 1px dashed var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text3); font-family: var(--mono); font-size: 9px;
+    letter-spacing: 1px; text-align: center;
+  }
+
   /* ── Bonds ── */
   .bond-row {
     display: grid;
@@ -676,6 +710,11 @@
     .sheet-derived-v { color: #7a5800 !important; }
     .sheet-current-v { color: #666 !important; }
     .sheet-current-box { border-bottom: 1px solid #888 !important; color: #333 !important; }
+
+    /* Portrait */
+    .sheet-portrait-box { border-left: 1px solid #ccc !important; }
+    .sheet-portrait-img { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .sheet-portrait-empty { border: 1px dashed #ccc !important; color: #aaa !important; }
 
     /* Bonds */
     .sheet-bond-row { border-bottom: 1px solid #ccc !important; color: #111 !important; }
@@ -1028,6 +1067,17 @@
     </div>
     <div class="field-group"><label>Education & Occupational History</label><textarea id="p-edu" placeholder="Brief professional background and history…"></textarea></div>
     <div class="field-group"><label>Physical Description</label><textarea id="p-phys" placeholder="Height, weight, hair, eyes, distinguishing features…"></textarea></div>
+    <div class="field-group">
+      <label>Agent Portrait <span style="color:var(--text3);font-size:10px;letter-spacing:1px">(optional)</span></label>
+      <div style="display:flex;align-items:flex-start;gap:1rem">
+        <div id="portrait-upload-area" class="portrait-upload-area" onclick="document.getElementById('portrait-input').click()" title="Click to upload image">+ UPLOAD<br>PORTRAIT</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;padding-top:4px">
+          <button id="portrait-clear-btn" class="portrait-clear-btn" onclick="clearPortrait()" style="display:none">✕ Remove</button>
+          <p style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;line-height:1.6">Appears on<br>character sheet.<br>Not included<br>in shared URLs.</p>
+        </div>
+      </div>
+      <input type="file" id="portrait-input" accept="image/*" style="display:none" onchange="loadPortrait(this)">
+    </div>
     <div class="nav-btns"><button class="nav-btn primary" onclick="goStep(1)">NEXT: PROFESSION →</button></div>
   </div>
 
@@ -1190,6 +1240,7 @@ let hpOverride  = null;
 let bondScores  = [];
 let tickedSkills = {};
 let lastImprovementResults = null;
+let portraitData = null;
 
 const WEAPONS_DB = [
   {name:'Glock 17 (9mm)',        skill:'Firearms',       range:'15m',  damage:'1D10',   ap:'—', lethality:'—', killRadius:'—', ammo:'17+1'},
@@ -2134,17 +2185,26 @@ function renderSheet() {
 
     <div class="sheet-section">
       <div class="sheet-section-hdr">01 — Personal Data</div>
-      <div class="sheet-row">
-        <div class="sheet-cell"><div class="sheet-cell-label">Name</div><div class="sheet-cell-val">${document.getElementById('p-name').value||'—'}</div></div>
-        <div class="sheet-cell"><div class="sheet-cell-label">Profession</div><div class="sheet-cell-val">${selectedProf||'—'}</div></div>
-        <div class="sheet-cell"><div class="sheet-cell-label">Employer</div><div class="sheet-cell-val">${document.getElementById('p-employer').value||'—'}</div></div>
+      <div class="sheet-personal-layout">
+        <div class="sheet-personal-fields">
+          <div class="sheet-row">
+            <div class="sheet-cell"><div class="sheet-cell-label">Name</div><div class="sheet-cell-val">${document.getElementById('p-name').value||'—'}</div></div>
+            <div class="sheet-cell"><div class="sheet-cell-label">Profession</div><div class="sheet-cell-val">${selectedProf||'—'}</div></div>
+            <div class="sheet-cell"><div class="sheet-cell-label">Employer</div><div class="sheet-cell-val">${document.getElementById('p-employer').value||'—'}</div></div>
+          </div>
+          <div class="sheet-row">
+            <div class="sheet-cell"><div class="sheet-cell-label">Nationality</div><div class="sheet-cell-val">${document.getElementById('p-nationality').value||'—'}</div></div>
+            <div class="sheet-cell"><div class="sheet-cell-label">Sex</div><div class="sheet-cell-val">${document.getElementById('p-sex').value}</div></div>
+            <div class="sheet-cell"><div class="sheet-cell-label">Age / D.O.B.</div><div class="sheet-cell-val">${document.getElementById('p-dob').value||'—'}</div></div>
+          </div>
+          ${document.getElementById('p-phys').value?`<div class="sheet-row"><div class="sheet-cell"><div class="sheet-cell-label">Physical Description</div><div class="sheet-cell-val" style="font-size:12px">${document.getElementById('p-phys').value}</div></div></div>`:''}
+        </div>
+        <div class="sheet-portrait-box">
+          ${portraitData
+            ? `<img src="${portraitData}" class="sheet-portrait-img" alt="Agent Portrait">`
+            : `<div class="sheet-portrait-empty">PHOTO</div>`}
+        </div>
       </div>
-      <div class="sheet-row">
-        <div class="sheet-cell"><div class="sheet-cell-label">Nationality</div><div class="sheet-cell-val">${document.getElementById('p-nationality').value||'—'}</div></div>
-        <div class="sheet-cell"><div class="sheet-cell-label">Sex</div><div class="sheet-cell-val">${document.getElementById('p-sex').value}</div></div>
-        <div class="sheet-cell"><div class="sheet-cell-label">Age / D.O.B.</div><div class="sheet-cell-val">${document.getElementById('p-dob').value||'—'}</div></div>
-      </div>
-      ${document.getElementById('p-phys').value?`<div class="sheet-row"><div class="sheet-cell"><div class="sheet-cell-label">Physical Description</div><div class="sheet-cell-val" style="font-size:12px">${document.getElementById('p-phys').value}</div></div></div>`:''}
     </div>
 
     <div class="sheet-section">
@@ -2251,6 +2311,38 @@ function renderSheet() {
 renderStatRows();
 renderProfList();
 
+// ── Portrait ──────────────────────────
+function loadPortrait(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    portraitData = e.target.result;
+    renderPortraitPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderPortraitPreview() {
+  const area = document.getElementById('portrait-upload-area');
+  const clearBtn = document.getElementById('portrait-clear-btn');
+  if(!area) return;
+  if(portraitData) {
+    area.innerHTML = `<img src="${portraitData}" alt="Portrait">`;
+    if(clearBtn) clearBtn.style.display = 'inline-block';
+  } else {
+    area.innerHTML = '+ UPLOAD<br>PORTRAIT';
+    if(clearBtn) clearBtn.style.display = 'none';
+  }
+}
+
+function clearPortrait() {
+  portraitData = null;
+  const input = document.getElementById('portrait-input');
+  if(input) input.value = '';
+  renderPortraitPreview();
+}
+
 // ── New Character ──────────────────────────
 function newCharacter() {
   if((document.getElementById('p-name').value.trim() || selectedProf) &&
@@ -2271,6 +2363,8 @@ function newCharacter() {
   hpOverride   = null;
   tickedSkills = {};
   lastImprovementResults = null;
+  portraitData = null;
+  renderPortraitPreview();
   ['p-name','p-prof-title','p-employer','p-dob','p-edu','p-phys'].forEach(id => {
     document.getElementById(id).value = '';
   });
@@ -2352,6 +2446,8 @@ function loadCharacter(name) {
   bpOverride   = c.bpOverride   ?? null;
   hpOverride   = c.hpOverride   ?? null;
   bondScores   = [...(c.bondScores || [])];
+  portraitData = c.portraitData ?? null;
+  renderPortraitPreview();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
   closeLoadModal();
   goStep(6);
@@ -2408,6 +2504,8 @@ function importFromJSON(input) {
       bpOverride   = c.bpOverride  ?? null;
       hpOverride   = c.hpOverride  ?? null;
       bondScores   = [...(c.bondScores || [])];
+      portraitData = c.portraitData ?? null;
+      renderPortraitPreview();
       document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
       input.value = '';
       closeLoadModal();
@@ -2445,6 +2543,7 @@ function buildCharData() {
     bpOverride,
     hpOverride,
     bondScores:  [...bondScores],
+    portraitData,
   };
 }
 
@@ -2457,12 +2556,15 @@ function decodeCharData(encoded) {
 }
 
 function generateShareURL(btn) {
-  const encoded = encodeCharData(buildCharData());
+  const data = buildCharData();
+  const hadPortrait = !!data.portraitData;
+  data.portraitData = undefined; // exclude — too large for a URL
+  const encoded = encodeCharData(data);
   const url = window.location.origin + window.location.pathname + '?c=' + encoded;
   navigator.clipboard.writeText(url).then(() => {
     const orig = btn.textContent;
-    btn.textContent = '✓ Link Copied!';
-    setTimeout(() => { btn.textContent = orig; }, 2000);
+    btn.textContent = hadPortrait ? '✓ Copied (portrait excluded)' : '✓ Link Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 2500);
   }).catch(() => {
     prompt('Copy this link to share:', url);
   });
@@ -2508,6 +2610,8 @@ function importSharedChar() {
   bpOverride   = c.bpOverride  ?? null;
   hpOverride   = c.hpOverride  ?? null;
   bondScores   = [...(c.bondScores || [])];
+  portraitData = c.portraitData ?? null;
+  renderPortraitPreview();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
   dismissImportBanner();
   goStep(6);
