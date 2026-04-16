@@ -799,10 +799,15 @@
   .result-roll     { color: var(--text3); text-align: center; }
 
   /* ── New Character button ── */
-  .new-char-btn {
+  .header-btns {
     position: absolute;
     top: 1rem;
-    right: 9.5rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .new-char-btn {
     background: transparent;
     border: 1px solid var(--text3);
     color: var(--text3);
@@ -854,9 +859,6 @@
 
   /* ── Load / Save ── */
   .load-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
     background: transparent;
     border: 1px solid var(--green);
     color: var(--green);
@@ -868,6 +870,155 @@
     text-transform: uppercase;
   }
   .load-btn:hover { background: rgba(122,182,72,0.12); }
+  .play-btn {
+    background: transparent;
+    border: 1px solid var(--text3);
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .play-btn:hover { border-color: var(--green); color: var(--green); background: rgba(122,182,72,0.08); }
+  .play-btn.active { border-color: var(--green); color: var(--green); background: rgba(122,182,72,0.12); }
+  /* Play Panel */
+  .play-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    overflow-y: auto;
+    padding: 2rem 1rem;
+  }
+  .play-overlay.open { display: block; }
+  .play-panel {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+  }
+  .play-panel-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+  }
+  .play-panel-title {
+    font-family: var(--head);
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--green-bright);
+  }
+  .play-close-btn {
+    background: none; border: none; color: var(--text3);
+    font-size: 18px; cursor: pointer; padding: 0 4px;
+  }
+  .play-close-btn:hover { color: var(--text); }
+  /* API Key */
+  .play-api-section {
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border2);
+    padding: 0.75rem;
+  }
+  .play-api-hdr {
+    display: flex; align-items: center; gap: 0.75rem; cursor: pointer;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--text3);
+  }
+  .play-api-hdr:hover { color: var(--text2); }
+  .play-api-body { margin-top: 0.75rem; display: none; }
+  .play-api-body.open { display: block; }
+  .play-api-body input {
+    width: 100%; box-sizing: border-box;
+    background: var(--bg); border: 1px solid var(--border2); color: var(--text);
+    font-family: var(--mono); font-size: 11px; padding: 6px 8px;
+  }
+  .play-api-hint { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+  /* Stat trackers */
+  .play-stats {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border2);
+  }
+  .play-stat-box {
+    background: var(--bg); border: 1px solid var(--border2);
+    padding: 0.5rem 0.75rem; min-width: 100px; text-align: center;
+  }
+  .play-stat-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+    color: var(--text3); margin-bottom: 4px;
+  }
+  .play-stat-ctrl { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+  .play-stat-btn {
+    background: none; border: 1px solid var(--border2); color: var(--text2);
+    font-family: var(--mono); font-size: 14px; width: 24px; height: 24px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .play-stat-btn:hover { border-color: var(--green); color: var(--green); }
+  .play-stat-val { font-family: var(--mono); font-size: 20px; color: var(--text); min-width: 28px; }
+  .play-stat-max { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-top: 2px; }
+  /* Notes columns */
+  .play-notes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  @media (max-width: 600px) { .play-notes-grid { grid-template-columns: 1fr; } }
+  .play-notes-col { display: flex; flex-direction: column; gap: 0.5rem; }
+  .play-notes-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+    color: var(--text2); text-transform: uppercase;
+  }
+  .play-notes-textarea {
+    width: 100%; box-sizing: border-box; min-height: 160px; resize: vertical;
+    background: var(--bg); border: 1px solid var(--border2); color: var(--text);
+    font-family: var(--mono); font-size: 11px; padding: 8px; line-height: 1.6;
+  }
+  .play-organize-btn {
+    background: none; border: 1px solid var(--green); color: var(--green);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+    padding: 5px 10px; cursor: pointer; text-transform: uppercase; align-self: flex-start;
+  }
+  .play-organize-btn:hover { background: rgba(122,182,72,0.1); }
+  .play-organize-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .play-organized-output {
+    background: var(--bg); border: 1px solid var(--border2);
+    padding: 0.75rem; min-height: 80px;
+    font-family: var(--mono); font-size: 11px; color: var(--text2);
+    white-space: pre-wrap; line-height: 1.7; display: none;
+  }
+  .play-organized-output.has-content { display: block; }
+  .play-organize-status { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+  .play-weapon-table {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+  }
+  .play-weapon-table th {
+    text-align: left; color: var(--text3); border-bottom: 1px solid var(--border2);
+    padding: 3px 8px 3px 0; font-weight: normal; text-transform: uppercase;
+  }
+  .play-weapon-table td {
+    padding: 4px 8px 4px 0; color: var(--text2); border-bottom: 1px solid var(--bg3);
+  }
+  .play-weapon-table td.weapon-name { color: var(--text); }
+  .play-weapon-table td.weapon-skill { color: var(--green); }
+  .play-bond-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-family: var(--mono); font-size: 11px;
+  }
+  .play-bond-name { flex: 1; color: var(--text2); }
+  .play-bond-ctrl { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .play-bond-score { min-width: 28px; text-align: center; font-size: 14px; color: var(--text); }
+  .play-skill-chip {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+    background: var(--bg); border: 1px solid var(--border2);
+    padding: 3px 8px; white-space: nowrap;
+  }
+  .play-skill-chip.prof-skill { border-color: var(--green); color: var(--green); }
   .save-btn {
     margin-top: 1rem;
     padding: 10px 20px;
@@ -1040,8 +1191,129 @@
     <div class="dg-logo">DELTA GREEN</div>
     <div class="dg-subtitle">AGENT DOCUMENTATION SYSTEM</div>
     <div class="dg-class">TOP SECRET // ORCON // SPECIAL ACCESS REQUIRED</div>
-    <button class="new-char-btn" onclick="newCharacter()">✦ New Agent</button>
-    <button class="load-btn" onclick="openLoadModal()">⬆ Load Agent</button>
+    <div class="header-btns">
+      <button class="new-char-btn" onclick="newCharacter()">✦ New Agent</button>
+      <button class="play-btn" id="play-btn" onclick="togglePlayPanel()">▶ Play</button>
+      <button class="load-btn" onclick="openLoadModal()">⬆ Load Agent</button>
+    </div>
+  </div>
+
+  <!-- Play Panel Overlay -->
+  <div id="play-overlay" class="play-overlay" onclick="if(event.target===this)togglePlayPanel()">
+    <div class="play-panel">
+      <div class="play-panel-hdr">
+        <span class="play-panel-title">PLAY MODE</span>
+        <button class="play-close-btn" onclick="togglePlayPanel()">✕</button>
+      </div>
+
+      <!-- API Key -->
+      <div class="play-api-section">
+        <div class="play-api-hdr" onclick="toggleApiKey()">
+          <span id="play-api-indicator">○</span>
+          <span>GEMINI API KEY</span>
+          <span id="play-api-toggle-lbl" style="margin-left:auto">▸ CONFIGURE</span>
+        </div>
+        <div class="play-api-body" id="play-api-body">
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <input type="password" id="play-api-key" placeholder="Paste your Gemini API key here…" style="flex:1">
+            <button class="portrait-clear-btn" onclick="toggleApiKeyVisibility()" id="play-api-show-btn" style="flex-shrink:0">SHOW</button>
+            <button class="play-organize-btn" onclick="saveApiKey()" style="flex-shrink:0">SAVE</button>
+            <button class="portrait-clear-btn" onclick="testApiKey()" id="play-api-test-btn" style="flex-shrink:0;display:none">TEST</button>
+            <button class="portrait-clear-btn" onclick="clearApiKey()" id="play-api-clear-btn" style="flex-shrink:0;display:none">CLEAR</button>
+          </div>
+          <div class="play-api-hint" style="margin-top:6px">
+            Free key at <strong>aistudio.google.com</strong> → Get API Key → Create API Key. Stored in your browser only.
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Trackers -->
+      <div class="play-stats">
+        <div class="play-stat-box">
+          <div class="play-stat-label">HIT POINTS</div>
+          <div class="play-stat-ctrl">
+            <button class="play-stat-btn" onclick="playAdjust('hp',-1)">−</button>
+            <span class="play-stat-val" id="play-hp">—</span>
+            <button class="play-stat-btn" onclick="playAdjust('hp',1)">+</button>
+          </div>
+          <div class="play-stat-max" id="play-hp-max"></div>
+        </div>
+        <div class="play-stat-box">
+          <div class="play-stat-label">WILLPOWER</div>
+          <div class="play-stat-ctrl">
+            <button class="play-stat-btn" onclick="playAdjust('wp',-1)">−</button>
+            <span class="play-stat-val" id="play-wp">—</span>
+            <button class="play-stat-btn" onclick="playAdjust('wp',1)">+</button>
+          </div>
+          <div class="play-stat-max" id="play-wp-max"></div>
+        </div>
+        <div class="play-stat-box">
+          <div class="play-stat-label">SANITY</div>
+          <div class="play-stat-ctrl">
+            <button class="play-stat-btn" onclick="playAdjust('san',-1)">−</button>
+            <span class="play-stat-val" id="play-san">—</span>
+            <button class="play-stat-btn" onclick="playAdjust('san',1)">+</button>
+          </div>
+          <div class="play-stat-max" id="play-san-max"></div>
+        </div>
+        <div class="play-stat-box">
+          <div class="play-stat-label">BREAKING POINT</div>
+          <div class="play-stat-ctrl">
+            <button class="play-stat-btn" onclick="playAdjust('bp',-1)">−</button>
+            <span class="play-stat-val" id="play-bp">—</span>
+            <button class="play-stat-btn" onclick="playAdjust('bp',1)">+</button>
+          </div>
+          <button class="play-stat-max" onclick="recalcBP();renderPlayPanel();" style="background:none;border:none;cursor:pointer;color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;margin-top:4px;padding:0" title="BP = current SAN − POW">↺ Recalc BP</button>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border2)">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2)">SKILLS ABOVE BASE</div>
+          <button id="play-base-skills-btn" class="portrait-clear-btn" onclick="toggleBaseSkills()" style="font-size:9px;padding:2px 8px">▸ BASE SKILLS</button>
+        </div>
+        <div id="play-skills-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        <div id="play-base-skills-list" style="display:none;flex-wrap:wrap;gap:6px;margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border2)"></div>
+      </div>
+
+      <!-- Weapons -->
+      <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border2)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);margin-bottom:0.5rem">WEAPONS</div>
+        <div id="play-weapons-list"></div>
+      </div>
+
+      <!-- Bonds -->
+      <div style="margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border2)">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);margin-bottom:0.5rem">BONDS</div>
+        <div id="play-bonds-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+
+      <!-- Notes -->
+      <div class="play-notes-grid">
+        <div class="play-notes-col">
+          <div class="play-notes-label">Field Notes</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3)">Raw notes — NPCs, clues, locations, events. AI will sort into categories.</div>
+          <textarea class="play-notes-textarea" id="play-field-notes" placeholder="Spoke to Dr. Marsh at the university — seemed nervous about the Innsmouth photos. Found a locked door in basement. Strange symbols on wall match the ones from the Olmstead file…" oninput="savePlayNotes()"></textarea>
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+            <button class="play-organize-btn" id="org-field-btn" onclick="organizeNotes('field')">✦ Organize by Category</button>
+            <span class="play-organize-status" id="org-field-status"></span>
+          </div>
+          <div class="play-organized-output" id="play-field-organized"></div>
+        </div>
+        <div class="play-notes-col">
+          <div class="play-notes-label">Session Log</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3)">Notes per session. Mark sessions with "Session 1", "Session 2", or a date. AI will structure and summarize each.</div>
+          <textarea class="play-notes-textarea" id="play-session-notes" placeholder="Session 1 — arrived in Innsmouth. Hotel smells wrong. Session 2 — found the journal. Three agents compromised…" oninput="savePlayNotes()"></textarea>
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+            <button class="play-organize-btn" id="org-session-btn" onclick="organizeNotes('session')">✦ Organize by Session</button>
+            <span class="play-organize-status" id="org-session-status"></span>
+          </div>
+          <div class="play-organized-output" id="play-session-organized"></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <div class="step-nav" id="step-nav">
@@ -1066,12 +1338,29 @@
       <div class="field-group"><label>Age / D.O.B.</label><input type="text" id="p-dob" placeholder="34 / 12 MAR 1990"></div>
     </div>
     <div class="field-group"><label>Education & Occupational History</label><textarea id="p-edu" placeholder="Brief professional background and history…"></textarea></div>
-    <div class="field-group"><label>Physical Description</label><textarea id="p-phys" placeholder="Height, weight, hair, eyes, distinguishing features…"></textarea></div>
+    <div class="field-group"><label>Physical Description</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem">
+        <div class="field-group" style="margin:0"><label>Height</label><input type="text" id="p-height" placeholder='5&apos;10" / 178cm'></div>
+        <div class="field-group" style="margin:0"><label>Build</label>
+          <select id="p-build"><option value="">—</option><option>Slim</option><option>Athletic</option><option>Average</option><option>Stocky</option><option>Heavy</option></select>
+        </div>
+        <div class="field-group" style="margin:0"><label>Hair</label><input type="text" id="p-hair" placeholder="Short brown, close-cropped"></div>
+        <div class="field-group" style="margin:0"><label>Eyes</label><input type="text" id="p-eyes" placeholder="Blue-grey"></div>
+        <div class="field-group" style="margin:0;grid-column:1/-1"><label>Complexion</label><input type="text" id="p-complexion" placeholder="Pale and weathered"></div>
+      </div>
+      <label>Distinguishing Features</label>
+      <textarea id="p-phys" placeholder="Scars, tattoos, posture, mannerisms…"></textarea>
+      <button class="portrait-clear-btn" onclick="copyAIPrompt(this)" style="margin-top:0.5rem;border-color:var(--green);color:var(--green)" title="Assembles a portrait prompt from your physical description fields and copies it to clipboard — paste it into Ideogram to generate a portrait.">⧉ COPY AI PORTRAIT PROMPT</button>
+    </div>
     <div class="field-group">
       <label>Agent Portrait <span style="color:var(--text3);font-size:10px;letter-spacing:1px">(optional)</span></label>
       <div style="display:flex;align-items:flex-start;gap:1rem">
         <div id="portrait-upload-area" class="portrait-upload-area" onclick="document.getElementById('portrait-input').click()" title="Click to upload image">+ UPLOAD<br>PORTRAIT</div>
         <div style="display:flex;flex-direction:column;gap:0.5rem;padding-top:4px">
+          <a href="https://ideogram.ai" target="_blank" rel="noopener"
+             class="portrait-clear-btn"
+             style="text-decoration:none;border-color:var(--green);color:var(--green);display:inline-block"
+             title="Generate a portrait on Ideogram (free AI image generator) — download the result, then upload it here.">✦ GENERATE WITH AI ↗</a>
           <button id="portrait-clear-btn" class="portrait-clear-btn" onclick="clearPortrait()" style="display:none">✕ Remove</button>
           <p style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;line-height:1.6">Appears on<br>character sheet.<br>Not included<br>in shared URLs.</p>
         </div>
@@ -1240,7 +1529,11 @@ let hpOverride  = null;
 let bondScores  = [];
 let tickedSkills = {};
 let lastImprovementResults = null;
-let portraitData = null;
+let portraitData     = null;
+let playFieldNotes   = '';
+let playSessionNotes = '';
+let playFieldOrganized   = '';
+let playSessionOrganized = '';
 
 const WEAPONS_DB = [
   {name:'Glock 17 (9mm)',        skill:'Firearms',       range:'15m',  damage:'1D10',   ap:'—', lethality:'—', killRadius:'—', ammo:'17+1'},
@@ -1274,20 +1567,47 @@ const GEAR_LIST = [
 ];
 
 const ALL_SKILLS = [
-  {name:'Accounting',base:10},{name:'Alertness',base:20},{name:'Anthropology',base:0},
-  {name:'Archeology',base:0},{name:'Art',base:0},{name:'Artillery',base:0},
-  {name:'Athletics',base:30},{name:'Bureaucracy',base:10},{name:'Computer Science',base:0},
-  {name:'Craft',base:0},{name:'Criminology',base:10},{name:'Demolitions',base:0},
-  {name:'Disguise',base:10},{name:'Dodge',base:30},{name:'Drive',base:20},
-  {name:'Firearms',base:20},{name:'First Aid',base:10},{name:'Forensics',base:0},
-  {name:'Heavy Machinery',base:10},{name:'Heavy Weapons',base:0},{name:'History',base:10},
-  {name:'HUMINT',base:10},{name:'Law',base:0},{name:'Medicine',base:0},
-  {name:'Melee Weapons',base:30},{name:'Military Science',base:0},
-  {name:'Navigate',base:10},{name:'Occult',base:10},{name:'Persuade',base:20},
-  {name:'Pharmacy',base:0},{name:'Pilot',base:0},{name:'Psychotherapy',base:10},
-  {name:'Ride',base:10},{name:'Search',base:20},{name:'SIGINT',base:0},
-  {name:'Stealth',base:10},{name:'Surgery',base:0},{name:'Survival',base:10},
-  {name:'Swim',base:20},{name:'Unarmed Combat',base:40},{name:'Unnatural',base:0}
+  {name:'Accounting',base:10,desc:'Track finances, analyze records, spot fraud, and navigate budgets.'},
+  {name:'Alertness',base:20,desc:'Notice details, detect ambushes, and perceive things others miss.'},
+  {name:'Anthropology',base:0,desc:'Understand cultures, social structures, rituals, and human behavior across societies.'},
+  {name:'Archeology',base:0,desc:'Identify artifacts, date objects, and interpret ancient sites and civilizations.'},
+  {name:'Art',base:0,desc:'Create or interpret visual art, music, writing, photography, or performance.'},
+  {name:'Artillery',base:0,desc:'Operate crew-served weapons: mortars, howitzers, and rocket systems.'},
+  {name:'Athletics',base:30,desc:'Run, climb, jump, throw, and perform feats of physical fitness.'},
+  {name:'Bureaucracy',base:10,desc:'Navigate institutions, file paperwork, find the right person, and work the system.'},
+  {name:'Computer Science',base:0,desc:'Program, hack, analyze data, and maintain digital systems.'},
+  {name:'Craft',base:0,desc:'Build, repair, or fabricate physical objects using skilled trades.'},
+  {name:'Criminology',base:10,desc:'Understand criminal behavior, crime scenes, and investigative methods.'},
+  {name:'Demolitions',base:0,desc:'Set, disarm, or analyze explosive devices.'},
+  {name:'Disguise',base:10,desc:'Change appearance, adopt personas, and go unrecognized.'},
+  {name:'Dodge',base:30,desc:'Avoid incoming attacks and hazards through rapid movement.'},
+  {name:'Drive',base:20,desc:'Operate ground vehicles under normal and emergency conditions.'},
+  {name:'Firearms',base:20,desc:'Aim and fire pistols, rifles, shotguns, and automatic weapons.'},
+  {name:'First Aid',base:10,desc:'Stabilize wounds, treat shock, and provide immediate trauma care in the field.'},
+  {name:'Forensics',base:0,desc:'Analyze crime scenes, identify physical evidence, and interpret findings.'},
+  {name:'Heavy Machinery',base:10,desc:'Operate industrial equipment: bulldozers, cranes, forklifts, and heavy vehicles.'},
+  {name:'Heavy Weapons',base:0,desc:'Use crew-served and heavy weapons: machine guns, rocket launchers, and mounted guns.'},
+  {name:'History',base:10,desc:'Recall historical events, identify context, and research the past.'},
+  {name:'HUMINT',base:10,desc:'Read people, detect lies, and gather intelligence through direct human interaction.'},
+  {name:'Law',base:0,desc:'Know legal codes, navigate the justice system, and identify illegal activity.'},
+  {name:'Medicine',base:0,desc:'Diagnose illness, treat disease, and provide clinical medical care.'},
+  {name:'Melee Weapons',base:30,desc:'Fight effectively with knives, clubs, and other hand-held weapons.'},
+  {name:'Military Science',base:0,desc:'Plan operations, understand tactics, and analyze battlefield situations.'},
+  {name:'Navigate',base:10,desc:'Find your way using maps, landmarks, stars, or instruments.'},
+  {name:'Occult',base:10,desc:'Know folklore, conspiracy theories, and fringe knowledge touching on the unnatural.'},
+  {name:'Persuade',base:20,desc:'Convince, negotiate, inspire, or manipulate through words.'},
+  {name:'Pharmacy',base:0,desc:'Identify, prepare, and administer drugs, poisons, and chemical compounds.'},
+  {name:'Pilot',base:0,desc:'Operate aircraft or watercraft beyond normal driving skill.'},
+  {name:'Psychotherapy',base:10,desc:'Treat mental illness, help restore lost Sanity, and provide psychological support.'},
+  {name:'Ride',base:10,desc:'Handle horses and other riding animals in normal and stressful conditions.'},
+  {name:'Search',base:20,desc:'Examine scenes carefully, find hidden items, and spot physical clues.'},
+  {name:'SIGINT',base:0,desc:'Intercept, decrypt, and analyze electronic communications and signals intelligence.'},
+  {name:'Stealth',base:10,desc:'Move silently, hide, shadow targets, and avoid detection.'},
+  {name:'Surgery',base:0,desc:'Perform invasive medical procedures to repair serious injuries and save lives.'},
+  {name:'Survival',base:10,desc:'Endure harsh environments: find food, water, and shelter; navigate wilderness.'},
+  {name:'Swim',base:20,desc:'Move through water efficiently and survive aquatic hazards.'},
+  {name:'Unarmed Combat',base:40,desc:'Fight with fists, elbows, knees, and trained martial techniques.'},
+  {name:'Unnatural',base:0,desc:'Knowledge of entities and forces that defy natural law. Cannot be improved voluntarily — only exposure teaches this.'}
 ];
 
 const FL_OPTIONS = ['Arabic','Chinese (Mandarin)','French','German','Japanese','Portuguese','Russian','Spanish','Swahili','Other'];
@@ -1323,6 +1643,7 @@ const PROF_SUGGESTED = {
 
 const PROFESSIONS = {
   'Anthropologist/Historian': {
+    desc:'Studies human cultures and history; valuable for fieldwork, ancient texts, and understanding what should not exist.',
     bonds:4,
     core:[
       {name:'Anthropology',val:50,alt:'Archeology',altVal:50,altKey:'anthr_alt'},
@@ -1337,6 +1658,7 @@ const PROFESSIONS = {
     ]
   },
   'Computer Scientist/Engineer': {
+    desc:'Designs and maintains systems; essential for digital forensics, signals work, and electronic infrastructure.',
     bonds:3,
     core:[
       {name:'Computer Science',val:60},{name:'Craft (Electrician)',val:30},
@@ -1351,6 +1673,7 @@ const PROFESSIONS = {
     ]
   },
   'Criminal': {
+    desc:'Street-level operator with survival instincts; skilled at infiltration, black market contacts, and direct action.',
     bonds:4,
     core:[
       {name:'Alertness',val:50},{name:'Athletics',val:50},{name:'Criminology',val:60},
@@ -1367,6 +1690,7 @@ const PROFESSIONS = {
     ]
   },
   'Educator': {
+    desc:'Academic with broad knowledge and strong social skills; excels at research, persuasion, and institutional access.',
     bonds:3,
     core:[
       {name:'Bureaucracy',val:50},{name:'History',val:60},{name:'HUMINT',val:60},
@@ -1381,6 +1705,7 @@ const PROFESSIONS = {
     ]
   },
   'Farmer/Laborer': {
+    desc:'Physically capable and self-reliant; skilled with machinery, land navigation, and endurance in harsh conditions.',
     bonds:4,
     core:[
       {name:'Athletics',val:50},{name:'Craft (Mechanic)',val:40},{name:'Drive',val:40},
@@ -1395,6 +1720,7 @@ const PROFESSIONS = {
     ]
   },
   'Federal Agent': {
+    desc:'Law enforcement professional with investigative training, legal authority, and strong combat skills.',
     bonds:3,
     core:[
       {name:'Alertness',val:50},{name:'Bureaucracy',val:40},{name:'Criminology',val:50},
@@ -1409,6 +1735,7 @@ const PROFESSIONS = {
     ]
   },
   'Firefighter': {
+    desc:'Emergency responder trained for hazardous environments; physically tough with demolitions and rescue expertise.',
     bonds:3,
     core:[
       {name:'Alertness',val:50},{name:'Athletics',val:60},
@@ -1421,6 +1748,7 @@ const PROFESSIONS = {
     choices:[]
   },
   'Foreign Service Officer': {
+    desc:'Diplomatic professional with multilingual skills, bureaucratic expertise, and wide international contacts.',
     bonds:3,
     core:[
       {name:'Accounting',val:40},{name:'Anthropology',val:40},{name:'Bureaucracy',val:60},
@@ -1433,6 +1761,7 @@ const PROFESSIONS = {
     choices:[]
   },
   'Intelligence Analyst': {
+    desc:'Desk-based intelligence professional; excels at research, pattern recognition, and signals intelligence work.',
     bonds:3,
     core:[
       {name:'Anthropology',val:40},{name:'Bureaucracy',val:50},{name:'Computer Science',val:40},
@@ -1446,6 +1775,7 @@ const PROFESSIONS = {
     choices:[]
   },
   'Intelligence Case Officer': {
+    desc:'Field intelligence operative trained in human intelligence, disguise, and clandestine tradecraft.',
     bonds:2,
     core:[
       {name:'Alertness',val:50},{name:'Bureaucracy',val:40},{name:'Criminology',val:50},
@@ -1459,6 +1789,7 @@ const PROFESSIONS = {
     choices:[]
   },
   'Media Specialist': {
+    desc:'Journalist, photographer, or creative professional; skilled at extracting information and accessing restricted spaces.',
     bonds:4,
     core:[
       {name:'Art',val:60,free:'art',key:'MS_ART'},
@@ -1473,6 +1804,7 @@ const PROFESSIONS = {
     ]
   },
   'Lawyer or Business Executive': {
+    desc:'Legal or corporate professional with strong persuasion, financial acumen, and institutional connections.',
     bonds:4,
     core:[
       {name:'Accounting',val:50},{name:'Bureaucracy',val:50},
@@ -1485,6 +1817,7 @@ const PROFESSIONS = {
     ]
   },
   'Medic': {
+    desc:'Combat or field medic with strong trauma care; keeps the team alive under fire.',
     bonds:3,
     core:[
       {name:'Alertness',val:50},{name:'Athletics',val:50},{name:'Drive',val:40},
@@ -1498,6 +1831,7 @@ const PROFESSIONS = {
     ]
   },
   'Nurse or Paramedic': {
+    desc:'Clinical care professional with medical knowledge, strong interpersonal skills, and community trust.',
     bonds:4,
     core:[
       {name:'Alertness',val:40},{name:'Bureaucracy',val:40},{name:'First Aid',val:60},
@@ -1511,6 +1845,7 @@ const PROFESSIONS = {
     ]
   },
   'Physician': {
+    desc:'Trained doctor with deep medical and scientific knowledge; can perform surgery and treat complex conditions.',
     bonds:3,
     core:[
       {name:'Bureaucracy',val:50},{name:'First Aid',val:60},{name:'Medicine',val:60},
@@ -1524,6 +1859,7 @@ const PROFESSIONS = {
     ]
   },
   'Pilot or Sailor': {
+    desc:'Transportation specialist skilled in navigation, vehicle operation, and keeping calm under extreme conditions.',
     bonds:3,
     core:[
       {name:'Alertness',val:60},{name:'Bureaucracy',val:30},
@@ -1538,6 +1874,7 @@ const PROFESSIONS = {
     ]
   },
   'Police Officer': {
+    desc:'Law enforcement officer with investigative experience, community knowledge, and authority to act.',
     bonds:3,
     core:[
       {name:'Alertness',val:60},{name:'Bureaucracy',val:40},{name:'Criminology',val:40},
@@ -1553,6 +1890,7 @@ const PROFESSIONS = {
     ]
   },
   'Scientist': {
+    desc:'Research professional with deep expertise in one or more scientific disciplines; essential for understanding the impossible.',
     bonds:4,
     core:[
       {name:'Bureaucracy',val:40},{name:'Computer Science',val:40},
@@ -1568,6 +1906,7 @@ const PROFESSIONS = {
     ]
   },
   'Program Manager': {
+    desc:'Government or contractor administrator skilled in budgets, bureaucracy, and coordinating complex operations.',
     bonds:4,
     core:[
       {name:'Accounting',val:60},{name:'Bureaucracy',val:60},{name:'Computer Science',val:50},
@@ -1581,6 +1920,7 @@ const PROFESSIONS = {
     ]
   },
   'Soldier or Marine': {
+    desc:'Infantry trained for combat, land navigation, and unit operations; backbone of any direct-action team.',
     bonds:4,
     core:[
       {name:'Alertness',val:50},{name:'Athletics',val:50},{name:'Bureaucracy',val:30},
@@ -1597,6 +1937,7 @@ const PROFESSIONS = {
     ]
   },
   'Special Operator': {
+    desc:'Elite military professional trained for high-risk direct action; highly capable, very few bonds.',
     bonds:2,
     core:[
       {name:'Alertness',val:60},{name:'Athletics',val:60},{name:'Demolitions',val:40},
@@ -1741,7 +2082,7 @@ function rollStats() {
 // ── Professions ──────────────────────────
 function renderProfList() {
   document.getElementById('prof-list').innerHTML = Object.entries(PROFESSIONS).map(([name,p])=>`
-    <div class="prof-card ${selectedProf===name?'selected':''}" onclick="selectProf('${name}')">
+    <div class="prof-card ${selectedProf===name?'selected':''}" onclick="selectProf('${name}')" title="${p.desc||''}">
       <div class="prof-name">${name}</div>
       <div class="prof-meta">Bonds: ${p.bonds} &nbsp;|&nbsp; ${p.core.length} core skills${p.chooseN>0?' + choose '+p.chooseN:''}</div>
     </div>`).join('');
@@ -1906,7 +2247,8 @@ function renderBonusSkills() {
       const isMod = isProf || added > 0 || edited !== 0;
       const editLabel = edited > 0 ? `+${edited}` : edited < 0 ? `${edited}` : '0';
       const ticked = !!tickedSkills[sname];
-      return `<div class="skill-row skill-row-edit ${isProf?'prof-skill':''}">
+      const skillDesc = ALL_SKILLS.find(s=>s.name===sname)?.desc || '';
+      return `<div class="skill-row skill-row-edit ${isProf?'prof-skill':''}" title="${skillDesc}">
         <button class="tick-btn ${ticked?'ticked':''}" data-tick="${sname}" onclick="toggleTick('${sname}')" title="Mark as used this session">${ticked?'✓':''}</button>
         <span class="skill-name">${sname}${isProf?' ★':''}</span>
         <span class="skill-base">${pv>0?pv+'%':base+'%'}</span>
@@ -1952,7 +2294,8 @@ function renderBonusSkills() {
       const total = Math.min(80, (pv > 0 ? pv : base) + added*20);
       const isProf = pv > 0;
       const isMod = isProf || added > 0;
-      return `<div class="skill-row ${isProf?'prof-skill':''}">
+      const skillDesc = ALL_SKILLS.find(s=>s.name===sname)?.desc || '';
+      return `<div class="skill-row ${isProf?'prof-skill':''}" title="${skillDesc}">
         <span class="skill-name">${sname}${isProf?' ★':''}</span>
         <span class="skill-base">${pv>0?pv+'%':base+'%'}</span>
         <span class="skill-total ${isMod?'modified':''}">${total}%</span>
@@ -2197,7 +2540,17 @@ function renderSheet() {
             <div class="sheet-cell"><div class="sheet-cell-label">Sex</div><div class="sheet-cell-val">${document.getElementById('p-sex').value}</div></div>
             <div class="sheet-cell"><div class="sheet-cell-label">Age / D.O.B.</div><div class="sheet-cell-val">${document.getElementById('p-dob').value||'—'}</div></div>
           </div>
-          ${document.getElementById('p-phys').value?`<div class="sheet-row"><div class="sheet-cell"><div class="sheet-cell-label">Physical Description</div><div class="sheet-cell-val" style="font-size:12px">${document.getElementById('p-phys').value}</div></div></div>`:''}
+          ${(()=>{
+            const parts = [
+              document.getElementById('p-height').value,
+              document.getElementById('p-build').value ? document.getElementById('p-build').value + ' build' : '',
+              document.getElementById('p-hair').value ? document.getElementById('p-hair').value + ' hair' : '',
+              document.getElementById('p-eyes').value ? document.getElementById('p-eyes').value + ' eyes' : '',
+              document.getElementById('p-complexion').value,
+              document.getElementById('p-phys').value
+            ].filter(Boolean).join(', ');
+            return parts ? `<div class="sheet-row"><div class="sheet-cell"><div class="sheet-cell-label">Physical Description</div><div class="sheet-cell-val" style="font-size:12px">${parts}</div></div></div>` : '';
+          })()}
         </div>
         <div class="sheet-portrait-box">
           ${portraitData
@@ -2343,6 +2696,373 @@ function clearPortrait() {
   renderPortraitPreview();
 }
 
+// ── Play Panel ─────────────────────────────
+function togglePlayPanel() {
+  const overlay = document.getElementById('play-overlay');
+  const btn     = document.getElementById('play-btn');
+  const isOpen  = overlay.classList.toggle('open');
+  btn.classList.toggle('active', isOpen);
+  if(isOpen) renderPlayPanel();
+}
+
+function renderPlayPanel() {
+  // Stat values — mirror the character's current overrides
+  const calcHp  = Math.ceil((stats.STR + stats.CON) / 2);
+  const maxHp   = calcHp;
+  const curHp   = hpOverride  !== null ? hpOverride  : calcHp;
+  const maxSan  = stats.POW * 5;
+  const curSan  = sanOverride !== null ? sanOverride : maxSan;
+  const maxWp   = stats.POW;
+  const curWp   = stats.POW;  // WP doesn't have an override yet — show max
+  const curBp   = bpOverride  !== null ? bpOverride  : stats.POW * 4;
+
+  const hpEl  = document.getElementById('play-hp');
+  const sanEl = document.getElementById('play-san');
+  const wpEl  = document.getElementById('play-wp');
+  const bpEl  = document.getElementById('play-bp');
+  if(hpEl)  hpEl.textContent  = curHp;
+  if(sanEl) sanEl.textContent = curSan;
+  if(wpEl)  wpEl.textContent  = curWp;
+  if(bpEl)  bpEl.textContent  = curBp;
+
+  const hpMaxEl  = document.getElementById('play-hp-max');
+  const sanMaxEl = document.getElementById('play-san-max');
+  const wpMaxEl  = document.getElementById('play-wp-max');
+  if(hpMaxEl)  hpMaxEl.textContent  = 'max ' + maxHp;
+  if(sanMaxEl) sanMaxEl.textContent = 'max ' + maxSan;
+  if(wpMaxEl)  wpMaxEl.textContent  = 'max ' + maxWp;
+
+  // Skills above base
+  const skillsEl = document.getElementById('play-skills-list');
+  if(skillsEl) {
+    const ps = getProfSkills();
+    const chips = ALL_SKILLS
+      .filter(s => {
+        // Compute raw total without Math.max(1) clamping so 0-base skills don't appear
+        const pv    = ps[s.name] || 0;
+        const added = bonusAdded[s.name] || 0;
+        const edited= skillEdits[s.name] || 0;
+        const raw   = (pv > 0 ? pv : s.base) + added * 20 + edited;
+        return raw > s.base;
+      })
+      .map(s => {
+        const isProf = !!(ps[s.name]);
+        return `<span class="play-skill-chip ${isProf ? 'prof-skill' : ''}" title="${s.desc || ''}">${s.name} ${getSkillTotal(s.name)}%</span>`;
+      });
+    skillsEl.innerHTML = chips.length ? chips.join('') : '<span style="font-family:var(--mono);font-size:10px;color:var(--text3)">No skills above base yet.</span>';
+
+    // Base skills — at base value, base > 0
+    const baseEl = document.getElementById('play-base-skills-list');
+    if(baseEl) {
+      const baseChips = ALL_SKILLS
+        .filter(s => {
+          if(s.base === 0) return false;
+          const pv    = ps[s.name] || 0;
+          const added = bonusAdded[s.name] || 0;
+          const edited= skillEdits[s.name] || 0;
+          const raw   = (pv > 0 ? pv : s.base) + added * 20 + edited;
+          return raw === s.base;
+        })
+        .map(s => `<span class="play-skill-chip" title="${s.desc || ''}" style="color:var(--text3)">${s.name} ${s.base}%</span>`);
+      baseEl.innerHTML = baseChips.join('');
+    }
+  }
+
+  // Weapons
+  const weaponsEl = document.getElementById('play-weapons-list');
+  if(weaponsEl) {
+    if(!weapons.length) {
+      weaponsEl.innerHTML = '<span style="font-family:var(--mono);font-size:10px;color:var(--text3)">No weapons equipped.</span>';
+    } else {
+      weaponsEl.innerHTML = `
+        <table class="play-weapon-table">
+          <thead><tr>
+            <th>Weapon</th><th>Skill</th><th>Damage</th><th>Range</th><th>Ammo</th>
+          </tr></thead>
+          <tbody>${weapons.map(w => {
+            const skillPct = getSkillTotal(w.skill);
+            return `<tr>
+              <td class="weapon-name">${w.name}</td>
+              <td class="weapon-skill">${skillPct}%</td>
+              <td>${w.damage}</td>
+              <td>${w.range}</td>
+              <td>${w.ammo || '—'}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>`;
+    }
+  }
+
+  // Bonds
+  const bondsEl = document.getElementById('play-bonds-list');
+  if(bondsEl) {
+    if(!bonds.length) {
+      bondsEl.innerHTML = '<span style="font-family:var(--mono);font-size:10px;color:var(--text3)">No bonds defined yet.</span>';
+    } else {
+      // Ensure bondScores is initialised
+      while(bondScores.length < bonds.length) bondScores.push(stats.CHA);
+      bondsEl.innerHTML = bonds.map((name, i) => `
+        <div class="play-bond-row">
+          <span class="play-bond-name">${name || 'Bond ' + (i+1)}</span>
+          <div class="play-bond-ctrl">
+            <button class="play-stat-btn" onclick="playAdjustBond(${i},-1)">−</button>
+            <span class="play-bond-score" id="play-bond-score-${i}">${bondScores[i] ?? stats.CHA}</span>
+            <button class="play-stat-btn" onclick="playAdjustBond(${i},1)">+</button>
+          </div>
+        </div>`).join('');
+    }
+  }
+
+  // Notes
+  const fn = document.getElementById('play-field-notes');
+  const sn = document.getElementById('play-session-notes');
+  if(fn) fn.value = playFieldNotes;
+  if(sn) sn.value = playSessionNotes;
+
+  // Organized outputs
+  renderOrganized('field');
+  renderOrganized('session');
+
+  // API key indicator
+  const key = localStorage.getItem('dg_gemini_key') || '';
+  const ind = document.getElementById('play-api-indicator');
+  if(ind) ind.textContent = key ? '●' : '○';
+  const keyInput   = document.getElementById('play-api-key');
+  const clearBtn   = document.getElementById('play-api-clear-btn');
+  const testBtn    = document.getElementById('play-api-test-btn');
+  if(keyInput && key && !keyInput.value) keyInput.value = key;
+  if(clearBtn) clearBtn.style.display = key ? 'inline-block' : 'none';
+  if(testBtn)  testBtn.style.display  = key ? 'inline-block' : 'none';
+}
+
+function renderOrganized(type) {
+  const text = type === 'field' ? playFieldOrganized : playSessionOrganized;
+  const el   = document.getElementById('play-' + type + '-organized');
+  if(!el) return;
+  if(text) {
+    el.textContent = text;
+    el.classList.add('has-content');
+  } else {
+    el.classList.remove('has-content');
+  }
+}
+
+function playAdjust(stat, delta) {
+  const calcHp = Math.ceil((stats.STR + stats.CON) / 2);
+  if(stat === 'hp') {
+    const cur = hpOverride !== null ? hpOverride : calcHp;
+    hpOverride = Math.min(calcHp, Math.max(0, cur + delta));
+  } else if(stat === 'san') {
+    const cur = sanOverride !== null ? sanOverride : stats.POW * 5;
+    sanOverride = Math.min(stats.POW * 5, Math.max(0, cur + delta));
+  } else if(stat === 'wp') {
+    // WP tracks separately in play mode — we'll use a play-only override
+    const wpEl = document.getElementById('play-wp');
+    const cur = wpEl ? parseInt(wpEl.textContent) || stats.POW : stats.POW;
+    if(wpEl) wpEl.textContent = Math.min(stats.POW, Math.max(0, cur + delta));
+    return;
+  } else if(stat === 'bp') {
+    const cur = bpOverride !== null ? bpOverride : stats.POW * 4;
+    bpOverride = Math.min(99, Math.max(0, cur + delta));
+  }
+  updateDerived(); // keep sheet in sync
+  renderPlayPanel();
+}
+
+function savePlayNotes() {
+  const fn = document.getElementById('play-field-notes');
+  const sn = document.getElementById('play-session-notes');
+  if(fn) playFieldNotes   = fn.value;
+  if(sn) playSessionNotes = sn.value;
+}
+
+function playAdjustBond(i, delta) {
+  bondScores[i] = Math.min(stats.CHA, Math.max(0, (bondScores[i] ?? stats.CHA) + delta));
+  // Update play panel display
+  const el = document.getElementById('play-bond-score-' + i);
+  if(el) el.textContent = bondScores[i];
+  // Update character sheet bond score if visible
+  const sheetEl = document.getElementById('bond-score-' + i);
+  if(sheetEl) sheetEl.textContent = bondScores[i];
+}
+
+function toggleBaseSkills() {
+  const list = document.getElementById('play-base-skills-list');
+  const btn  = document.getElementById('play-base-skills-btn');
+  if(!list) return;
+  const open = list.style.display === 'none';
+  list.style.display = open ? 'flex' : 'none';
+  if(btn) btn.textContent = open ? '▾ BASE SKILLS' : '▸ BASE SKILLS';
+}
+
+function toggleApiKey() {
+  const body = document.getElementById('play-api-body');
+  const lbl  = document.getElementById('play-api-toggle-lbl');
+  const open = body.classList.toggle('open');
+  if(lbl) lbl.textContent = open ? '▾ CONFIGURE' : '▸ CONFIGURE';
+}
+
+function saveApiKey() {
+  const input = document.getElementById('play-api-key');
+  const val = (input?.value || '').trim();
+  if(!val) return;
+  localStorage.setItem('dg_gemini_key', val);
+  const ind = document.getElementById('play-api-indicator');
+  if(ind) ind.textContent = '●';
+  const clearBtn = document.getElementById('play-api-clear-btn');
+  const testBtn  = document.getElementById('play-api-test-btn');
+  if(clearBtn) clearBtn.style.display = 'inline-block';
+  if(testBtn)  testBtn.style.display  = 'inline-block';
+  // Flash the save button
+  const saveBtn = document.querySelector('#play-api-body .play-organize-btn');
+  if(saveBtn) { const orig = saveBtn.textContent; saveBtn.textContent = '✓ SAVED'; setTimeout(()=>{ saveBtn.textContent = orig; }, 2000); }
+}
+
+function clearApiKey() {
+  localStorage.removeItem('dg_gemini_key');
+  const input = document.getElementById('play-api-key');
+  if(input) input.value = '';
+  const ind = document.getElementById('play-api-indicator');
+  if(ind) ind.textContent = '○';
+  const clearBtn = document.getElementById('play-api-clear-btn');
+  if(clearBtn) clearBtn.style.display = 'none';
+}
+
+async function testApiKey() {
+  const key = localStorage.getItem('dg_gemini_key') || '';
+  if(!key) return;
+  const btn = document.getElementById('play-api-test-btn');
+  const ind = document.getElementById('play-api-indicator');
+  if(btn) { btn.disabled = true; btn.textContent = 'TESTING…'; }
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: 'Reply with only the word READY.' }] }] })
+      }
+    );
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if(btn) { btn.textContent = '✓ CONNECTED'; btn.style.borderColor = 'var(--green)'; btn.style.color = 'var(--green)'; }
+    if(ind) ind.style.color = 'var(--green)';
+    setTimeout(() => {
+      if(btn) { btn.textContent = 'TEST'; btn.style.borderColor = ''; btn.style.color = ''; btn.disabled = false; }
+    }, 3000);
+  } catch(err) {
+    if(btn) { btn.textContent = '✗ FAILED'; btn.style.borderColor = 'var(--red,#c04040)'; btn.style.color = 'var(--red,#c04040)'; }
+    const hint = document.querySelector('.play-api-hint');
+    if(hint) hint.textContent = 'Error: ' + err.message;
+    setTimeout(() => {
+      if(btn) { btn.textContent = 'TEST'; btn.style.borderColor = ''; btn.style.color = ''; btn.disabled = false; }
+    }, 4000);
+  }
+}
+
+function toggleApiKeyVisibility() {
+  const input = document.getElementById('play-api-key');
+  const btn   = document.getElementById('play-api-show-btn');
+  if(!input) return;
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  if(btn) btn.textContent = isHidden ? 'HIDE' : 'SHOW';
+}
+
+async function organizeNotes(type) {
+  const key = localStorage.getItem('dg_gemini_key') || '';
+  if(!key) {
+    const body = document.getElementById('play-api-body');
+    if(body) body.classList.add('open');
+    const lbl = document.getElementById('play-api-toggle-lbl');
+    if(lbl) lbl.textContent = '▾ CONFIGURE';
+    const statusEl = document.getElementById('org-' + type + '-status');
+    if(statusEl) statusEl.textContent = 'Add your Gemini API key above first.';
+    return;
+  }
+
+  const notes = type === 'field'
+    ? (document.getElementById('play-field-notes')?.value || '')
+    : (document.getElementById('play-session-notes')?.value || '');
+
+  if(!notes.trim()) {
+    const statusEl = document.getElementById('org-' + type + '-status');
+    if(statusEl) statusEl.textContent = 'No notes to organize.';
+    return;
+  }
+
+  const btn      = document.getElementById('org-' + type + '-btn');
+  const statusEl = document.getElementById('org-' + type + '-status');
+  if(btn)      btn.disabled = true;
+  if(statusEl) statusEl.textContent = 'Organizing…';
+
+  const prompt = type === 'field'
+    ? `You are organizing field notes for a Delta Green tabletop RPG campaign. Organize the following raw notes into clear sections by category: NPCs, Clues, Locations, Events, and Other. Keep all information — do not summarize or remove anything. Use plain text with section headers in ALL CAPS.\n\nNOTES:\n${notes}`
+    : `You are organizing a session log for a Delta Green tabletop RPG campaign. Organize the following notes by session. Look for session markers, dates, or natural breaks in the narrative. For each session write a brief summary followed by key events as bullet points. Use plain text with session headers in ALL CAPS.\n\nNOTES:\n${notes}`;
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      }
+    );
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const result = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if(type === 'field') playFieldOrganized   = result;
+    else                 playSessionOrganized = result;
+    renderOrganized(type);
+    if(statusEl) statusEl.textContent = '';
+  } catch(err) {
+    if(statusEl) statusEl.textContent = 'Error: ' + err.message;
+  } finally {
+    if(btn) btn.disabled = false;
+  }
+}
+
+// ── AI Portrait Prompt Builder ─────────────
+function copyAIPrompt(btn) {
+  const age        = (document.getElementById('p-dob').value || '').split('/')[0].trim();
+  const sex        = document.getElementById('p-sex').value;
+  const nationality= document.getElementById('p-nationality').value;
+  const height     = document.getElementById('p-height').value;
+  const build      = document.getElementById('p-build').value;
+  const hair       = document.getElementById('p-hair').value;
+  const eyes       = document.getElementById('p-eyes').value;
+  const complexion = document.getElementById('p-complexion').value;
+  const features   = document.getElementById('p-phys').value;
+
+  const parts = [];
+  if(age || sex || nationality) {
+    let who = '';
+    if(age) who += age + '-year-old ';
+    if(nationality) who += nationality + ' ';
+    if(sex) who += sex === 'F' ? 'woman' : sex === 'M' ? 'man' : 'person';
+    parts.push(who.trim());
+  }
+  if(build) parts.push(build.toLowerCase() + ' build');
+  if(height) parts.push(height);
+  if(hair) parts.push(hair + ' hair');
+  if(eyes) parts.push(eyes + ' eyes');
+  if(complexion) parts.push(complexion + ' complexion');
+  if(features) parts.push(features);
+
+  const prompt = 'Portrait photograph of a ' + parts.join(', ')
+    + '. Realistic, cinematic lighting, detailed face.';
+
+  navigator.clipboard.writeText(prompt).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied! Paste into Ideogram.';
+    setTimeout(() => { btn.textContent = orig; }, 3000);
+  }).catch(() => {
+    prompt('Copy this prompt and paste it into Ideogram:', prompt);
+  });
+}
+
 // ── New Character ──────────────────────────
 function newCharacter() {
   if((document.getElementById('p-name').value.trim() || selectedProf) &&
@@ -2363,11 +3083,17 @@ function newCharacter() {
   hpOverride   = null;
   tickedSkills = {};
   lastImprovementResults = null;
-  portraitData = null;
+  portraitData         = null;
+  playFieldNotes       = '';
+  playSessionNotes     = '';
+  playFieldOrganized   = '';
+  playSessionOrganized = '';
   renderPortraitPreview();
-  ['p-name','p-prof-title','p-employer','p-dob','p-edu','p-phys'].forEach(id => {
+  renderPlayPanel();
+  ['p-name','p-prof-title','p-employer','p-dob','p-edu','p-height','p-hair','p-eyes','p-complexion','p-phys'].forEach(id => {
     document.getElementById(id).value = '';
   });
+  document.getElementById('p-build').value = '';
   document.getElementById('p-nationality').value = 'American';
   document.getElementById('p-sex').value = 'F';
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Bonus Skills';
@@ -2431,6 +3157,11 @@ function loadCharacter(name) {
   document.getElementById('p-sex').value         = c.personal.sex || 'F';
   document.getElementById('p-dob').value         = c.personal.dob || '';
   document.getElementById('p-edu').value         = c.personal.edu || '';
+  document.getElementById('p-height').value      = c.personal.height || '';
+  document.getElementById('p-build').value       = c.personal.build || '';
+  document.getElementById('p-hair').value        = c.personal.hair || '';
+  document.getElementById('p-eyes').value        = c.personal.eyes || '';
+  document.getElementById('p-complexion').value  = c.personal.complexion || '';
   document.getElementById('p-phys').value        = c.personal.phys || '';
   stats        = {...c.stats};
   selectedProf = c.selectedProf || null;
@@ -2448,6 +3179,11 @@ function loadCharacter(name) {
   bondScores   = [...(c.bondScores || [])];
   portraitData = c.portraitData ?? null;
   renderPortraitPreview();
+  playFieldNotes       = c.playFieldNotes   || '';
+  playSessionNotes     = c.playSessionNotes || '';
+  playFieldOrganized   = c.playFieldOrganized   || '';
+  playSessionOrganized = c.playSessionOrganized || '';
+  renderPlayPanel();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
   closeLoadModal();
   goStep(6);
@@ -2489,6 +3225,11 @@ function importFromJSON(input) {
       document.getElementById('p-sex').value         = c.personal.sex || 'F';
       document.getElementById('p-dob').value         = c.personal.dob || '';
       document.getElementById('p-edu').value         = c.personal.edu || '';
+      document.getElementById('p-height').value      = c.personal.height || '';
+      document.getElementById('p-build').value       = c.personal.build || '';
+      document.getElementById('p-hair').value        = c.personal.hair || '';
+      document.getElementById('p-eyes').value        = c.personal.eyes || '';
+      document.getElementById('p-complexion').value  = c.personal.complexion || '';
       document.getElementById('p-phys').value        = c.personal.phys || '';
       stats        = {...c.stats};
       selectedProf = c.selectedProf || null;
@@ -2506,6 +3247,11 @@ function importFromJSON(input) {
       bondScores   = [...(c.bondScores || [])];
       portraitData = c.portraitData ?? null;
       renderPortraitPreview();
+      playFieldNotes       = c.playFieldNotes   || '';
+      playSessionNotes     = c.playSessionNotes || '';
+      playFieldOrganized   = c.playFieldOrganized   || '';
+      playSessionOrganized = c.playSessionOrganized || '';
+      renderPlayPanel();
       document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
       input.value = '';
       closeLoadModal();
@@ -2528,6 +3274,11 @@ function buildCharData() {
       sex:         document.getElementById('p-sex').value,
       dob:         document.getElementById('p-dob').value,
       edu:         document.getElementById('p-edu').value,
+      height:      document.getElementById('p-height').value,
+      build:       document.getElementById('p-build').value,
+      hair:        document.getElementById('p-hair').value,
+      eyes:        document.getElementById('p-eyes').value,
+      complexion:  document.getElementById('p-complexion').value,
       phys:        document.getElementById('p-phys').value,
     },
     stats:       {...stats},
@@ -2544,6 +3295,10 @@ function buildCharData() {
     hpOverride,
     bondScores:  [...bondScores],
     portraitData,
+    playFieldNotes,
+    playSessionNotes,
+    playFieldOrganized,
+    playSessionOrganized,
   };
 }
 
@@ -2595,6 +3350,11 @@ function importSharedChar() {
   document.getElementById('p-sex').value         = c.personal?.sex || 'F';
   document.getElementById('p-dob').value         = c.personal?.dob || '';
   document.getElementById('p-edu').value         = c.personal?.edu || '';
+  document.getElementById('p-height').value      = c.personal?.height || '';
+  document.getElementById('p-build').value       = c.personal?.build || '';
+  document.getElementById('p-hair').value        = c.personal?.hair || '';
+  document.getElementById('p-eyes').value        = c.personal?.eyes || '';
+  document.getElementById('p-complexion').value  = c.personal?.complexion || '';
   document.getElementById('p-phys').value        = c.personal?.phys || '';
   stats        = {...(c.stats || {})};
   selectedProf = c.selectedProf || null;
@@ -2612,6 +3372,11 @@ function importSharedChar() {
   bondScores   = [...(c.bondScores || [])];
   portraitData = c.portraitData ?? null;
   renderPortraitPreview();
+  playFieldNotes       = c.playFieldNotes   || '';
+  playSessionNotes     = c.playSessionNotes || '';
+  playFieldOrganized   = c.playFieldOrganized   || '';
+  playSessionOrganized = c.playSessionOrganized || '';
+  renderPlayPanel();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
   dismissImportBanner();
   goStep(6);

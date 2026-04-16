@@ -6,6 +6,42 @@ project-context.md doesn't hold. It is Claude's memory between sessions.
 
 ---
 
+## Session — 2026-04-16
+
+**Focus:** Tooltips for professions and skills; AI portrait prompt builder from structured physical description fields; Play tab with stat trackers, skills, weapons, bonds, and AI notes organizer.
+
+**Decisions made:**
+- Profession tooltips: added `desc` field to each PROFESSIONS entry, rendered as `title` attribute on `.prof-card`
+- Skill tooltips: added `desc` field to each ALL_SKILLS entry, rendered as `title` on `.skill-row` in both creation and edit mode
+- Physical Description replaced with structured fields: Height, Build (dropdown), Hair, Eyes, Complexion, Distinguishing Features textarea; backward compatible (old saves load fine with blank fields); sheet assembles them into a single combined line
+- "Copy AI Portrait Prompt" button assembles a ready-to-paste prompt from physical fields + nationality/sex/age pulled automatically; copies to clipboard; links to Ideogram
+- Ideogram link added as a simple ↗ button next to portrait upload — no API needed
+- Play tab: implemented as a fixed overlay (not a wizard step) opened via ▶ Play button in header; accessible at any time
+- Header buttons (New Agent, Play, Load Agent) moved into a `.header-btns` flex container to fix alignment — removed individual absolute positioning from each button
+- Play tab stat trackers (HP, WP, SAN, BP) mirror shared state variables (hpOverride, sanOverride, bpOverride); changes sync to character sheet via updateDerived()
+- Recalc BP button added to play panel BP box; calls existing recalcBP() then renderPlayPanel()
+- Play tab Skills Above Base: filters using raw uninflated total (no Math.max(1) clamp) so 0-base uninvested skills don't appear; prof skills shown green
+- Base Skills toggle button shows skills at base value where base > 0
+- Play tab Weapons: compact read-only table (Weapon, Skill%, Damage, Range, Ammo); skill% live-calculated via getSkillTotal()
+- Play tab Bonds: +/- buttons call playAdjustBond() which updates bondScores[] and patches both play panel and sheet DOM elements directly
+- Play tab notes: two separate textareas — Field Notes (organize by category) and Session Log (organize by session); both saved with character via buildCharData()
+- Gemini API key: replaced oninput auto-save with explicit SAVE button to prevent field being clobbered mid-type; added SHOW/HIDE toggle, TEST button, CLEAR button
+- Gemini model updated: gemini-1.5-flash → gemini-2.0-flash → gemini-2.5-flash (first two deprecated for new users; 2.5-flash confirmed working)
+- Organized note output stored in playFieldOrganized / playSessionOrganized; saved with character; rendered read-only below each textarea
+
+**Problems solved:**
+- Skill chips in play panel showing 1% for 0-base skills — caused by Math.max(1) in getSkillTotal(); fixed by computing raw total separately for the filter
+- Header buttons overlapping — caused by all three using position:absolute with conflicting right values; fixed with shared flex container
+- Gemini API key field not accepting input — oninput was fragile; replaced with explicit Save button
+- gemini-1.5-flash and gemini-2.0-flash both deprecated for new API key holders; updated to gemini-2.5-flash
+
+**Files changed this session:**
+ delta_green_character_creator.html | 947 +++++++++++++++++++++++++++++++++++--
+ project-context.md                 |   7 +-
+ project-memory.md                  |  26 +
+
+---
+
 ## Session — 2026-04-15
 
 **Focus:** Character portrait feature — upload and AI generation.

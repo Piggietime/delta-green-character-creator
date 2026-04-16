@@ -1,5 +1,5 @@
 # Project: Delta Green Character Creator
-Last updated: 2026-04-15 by Claude Code
+Last updated: 2026-04-16 by Claude Code
 
 ## What this project is
 A browser-based character creation tool for the Delta Green tabletop RPG. Users
