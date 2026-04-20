@@ -363,7 +363,9 @@
   }
   .skill-row:hover { background: var(--bg3); }
   .skill-row.prof-skill .skill-name { color: var(--green); }
-  .skill-name { font-size: 13px; }
+  .skill-name { font-size: 13px; display: flex; flex-direction: column; justify-content: center; }
+  .specialty-select { font-family: var(--mono); font-size: 10px; background: var(--bg3); color: var(--text2); border: 1px solid var(--border); padding: 2px 4px; border-radius: 2px; margin-top: 2px; width: 100%; max-width: 170px; }
+  .specialty-text { font-family: var(--mono); font-size: 10px; background: var(--bg3); color: var(--text2); border: 1px solid var(--border); padding: 2px 4px; border-radius: 2px; margin-top: 2px; width: 100%; max-width: 170px; }
   .skill-base { font-family: var(--mono); font-size: 11px; color: var(--text3); text-align: center; }
   .skill-total { font-family: var(--mono); font-size: 13px; font-weight: bold; text-align: center; color: var(--text2); }
   .skill-total.modified { color: var(--green-bright); }
@@ -1517,6 +1519,7 @@ let stats = {STR:12,CON:12,DEX:12,INT:12,POW:12,CHA:12};
 let selectedProf = null;
 let profChoices = {};
 let bonusAdded = {};
+let bonusSpecialty = {};
 let bonds = [];
 let weapons = [];
 let gear = {};
@@ -1571,18 +1574,19 @@ const ALL_SKILLS = [
   {name:'Alertness',base:20,desc:'Notice details, detect ambushes, and perceive things others miss.'},
   {name:'Anthropology',base:0,desc:'Understand cultures, social structures, rituals, and human behavior across societies.'},
   {name:'Archeology',base:0,desc:'Identify artifacts, date objects, and interpret ancient sites and civilizations.'},
-  {name:'Art',base:0,desc:'Create or interpret visual art, music, writing, photography, or performance.'},
+  {name:'Art',base:0,specialty:'art',desc:'Create or interpret visual art, music, writing, photography, or performance.'},
   {name:'Artillery',base:0,desc:'Operate crew-served weapons: mortars, howitzers, and rocket systems.'},
   {name:'Athletics',base:30,desc:'Run, climb, jump, throw, and perform feats of physical fitness.'},
   {name:'Bureaucracy',base:10,desc:'Navigate institutions, file paperwork, find the right person, and work the system.'},
   {name:'Computer Science',base:0,desc:'Program, hack, analyze data, and maintain digital systems.'},
-  {name:'Craft',base:0,desc:'Build, repair, or fabricate physical objects using skilled trades.'},
+  {name:'Craft',base:0,specialty:'craft',desc:'Build, repair, or fabricate physical objects using skilled trades.'},
   {name:'Criminology',base:10,desc:'Understand criminal behavior, crime scenes, and investigative methods.'},
   {name:'Demolitions',base:0,desc:'Set, disarm, or analyze explosive devices.'},
   {name:'Disguise',base:10,desc:'Change appearance, adopt personas, and go unrecognized.'},
   {name:'Dodge',base:30,desc:'Avoid incoming attacks and hazards through rapid movement.'},
   {name:'Drive',base:20,desc:'Operate ground vehicles under normal and emergency conditions.'},
   {name:'Firearms',base:20,desc:'Aim and fire pistols, rifles, shotguns, and automatic weapons.'},
+  {name:'Foreign Language',base:0,specialty:'fl_text',desc:'Communicate in a language other than your native tongue. Specify the language.'},
   {name:'First Aid',base:10,desc:'Stabilize wounds, treat shock, and provide immediate trauma care in the field.'},
   {name:'Forensics',base:0,desc:'Analyze crime scenes, identify physical evidence, and interpret findings.'},
   {name:'Heavy Machinery',base:10,desc:'Operate industrial equipment: bulldozers, cranes, forklifts, and heavy vehicles.'},
@@ -1592,15 +1596,16 @@ const ALL_SKILLS = [
   {name:'Law',base:0,desc:'Know legal codes, navigate the justice system, and identify illegal activity.'},
   {name:'Medicine',base:0,desc:'Diagnose illness, treat disease, and provide clinical medical care.'},
   {name:'Melee Weapons',base:30,desc:'Fight effectively with knives, clubs, and other hand-held weapons.'},
-  {name:'Military Science',base:0,desc:'Plan operations, understand tactics, and analyze battlefield situations.'},
+  {name:'Military Science',base:0,specialty:'mil',desc:'Plan operations, understand tactics, and analyze battlefield situations.'},
   {name:'Navigate',base:10,desc:'Find your way using maps, landmarks, stars, or instruments.'},
   {name:'Occult',base:10,desc:'Know folklore, conspiracy theories, and fringe knowledge touching on the unnatural.'},
   {name:'Persuade',base:20,desc:'Convince, negotiate, inspire, or manipulate through words.'},
   {name:'Pharmacy',base:0,desc:'Identify, prepare, and administer drugs, poisons, and chemical compounds.'},
-  {name:'Pilot',base:0,desc:'Operate aircraft or watercraft beyond normal driving skill.'},
+  {name:'Pilot',base:0,specialty:'pilot',desc:'Operate aircraft or watercraft beyond normal driving skill.'},
   {name:'Psychotherapy',base:10,desc:'Treat mental illness, help restore lost Sanity, and provide psychological support.'},
   {name:'Ride',base:10,desc:'Handle horses and other riding animals in normal and stressful conditions.'},
   {name:'Search',base:20,desc:'Examine scenes carefully, find hidden items, and spot physical clues.'},
+  {name:'Science',base:0,specialty:'sci',desc:'Apply knowledge of a scientific discipline: biology, chemistry, physics, mathematics, and more.'},
   {name:'SIGINT',base:0,desc:'Intercept, decrypt, and analyze electronic communications and signals intelligence.'},
   {name:'Stealth',base:10,desc:'Move silently, hide, shadow targets, and avoid detection.'},
   {name:'Surgery',base:0,desc:'Perform invasive medical procedures to repair serious injuries and save lives.'},
@@ -2090,9 +2095,10 @@ function renderProfList() {
 }
 
 function selectProf(name) {
-  selectedProf = name;
-  profChoices = {};
-  bonusAdded = {};
+  selectedProf   = name;
+  profChoices    = {};
+  bonusAdded     = {};
+  bonusSpecialty = {};
   document.getElementById('p-prof-title').value = name;
   renderProfList();
 }
@@ -2238,7 +2244,8 @@ function renderBonusSkills() {
     // ── Edit mode: show all skills with tick + +/- 1 buttons ──
     const tickCount = Object.values(tickedSkills).filter(Boolean).length;
     const skillRows = allNames.map(sname => {
-      const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
+      const skillDef = ALL_SKILLS.find(s=>s.name===sname);
+      const base = skillDef?.base ?? 0;
       const pv = ps[sname] || 0;
       const added = bonusAdded[sname] || 0;
       const edited = skillEdits[sname] || 0;
@@ -2247,10 +2254,23 @@ function renderBonusSkills() {
       const isMod = isProf || added > 0 || edited !== 0;
       const editLabel = edited > 0 ? `+${edited}` : edited < 0 ? `${edited}` : '0';
       const ticked = !!tickedSkills[sname];
-      const skillDesc = ALL_SKILLS.find(s=>s.name===sname)?.desc || '';
+      const skillDesc = skillDef?.desc || '';
+      const specType = skillDef?.specialty;
+      const curSpec = bonusSpecialty[sname] || '';
+      const specHtml = specType ? (() => {
+        if(specType === 'fl_text') {
+          return `<input type="text" class="specialty-text" placeholder="e.g. French, Mandarin…" value="${curSpec}" onchange="setBonusSpecialty('${sname}',this.value)">`;
+        }
+        const opts = getFreeChoices(specType);
+        return `<select class="specialty-select" onchange="setBonusSpecialty('${sname}',this.value)">
+          <option value="">— select type —</option>
+          ${opts.map(o=>`<option value="${o}" ${curSpec===o?'selected':''}>${o}</option>`).join('')}
+        </select>`;
+      })() : '';
+      const displayName = (specType && curSpec) ? `${sname} (${curSpec})` : sname;
       return `<div class="skill-row skill-row-edit ${isProf?'prof-skill':''}" title="${skillDesc}">
         <button class="tick-btn ${ticked?'ticked':''}" data-tick="${sname}" onclick="toggleTick('${sname}')" title="Mark as used this session">${ticked?'✓':''}</button>
-        <span class="skill-name">${sname}${isProf?' ★':''}</span>
+        <span class="skill-name">${displayName}${isProf?' ★':''}${specHtml}</span>
         <span class="skill-base">${pv>0?pv+'%':base+'%'}</span>
         <span class="skill-total ${isMod?'modified':''}">${total}%</span>
         <div class="skill-bonus-ctrl">
@@ -2288,15 +2308,29 @@ function renderBonusSkills() {
     const used = Object.values(bonusAdded).reduce((a,b)=>a+b,0);
     const rem = 8 - used;
     const skillRows = allNames.map(sname => {
-      const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
+      const skillDef = ALL_SKILLS.find(s=>s.name===sname);
+      const base = skillDef?.base ?? 0;
       const pv = ps[sname] || 0;
       const added = bonusAdded[sname] || 0;
       const total = Math.min(80, (pv > 0 ? pv : base) + added*20);
       const isProf = pv > 0;
       const isMod = isProf || added > 0;
-      const skillDesc = ALL_SKILLS.find(s=>s.name===sname)?.desc || '';
+      const skillDesc = skillDef?.desc || '';
+      const specType = skillDef?.specialty;
+      const curSpec = bonusSpecialty[sname] || '';
+      const specHtml = specType ? (() => {
+        if(specType === 'fl_text') {
+          return `<input type="text" class="specialty-text" placeholder="e.g. French, Mandarin…" value="${curSpec}" onchange="setBonusSpecialty('${sname}',this.value)">`;
+        }
+        const opts = getFreeChoices(specType);
+        return `<select class="specialty-select" onchange="setBonusSpecialty('${sname}',this.value)">
+          <option value="">— select type —</option>
+          ${opts.map(o=>`<option value="${o}" ${curSpec===o?'selected':''}>${o}</option>`).join('')}
+        </select>`;
+      })() : '';
+      const displayName = (specType && curSpec) ? `${sname} (${curSpec})` : sname;
       return `<div class="skill-row ${isProf?'prof-skill':''}" title="${skillDesc}">
-        <span class="skill-name">${sname}${isProf?' ★':''}</span>
+        <span class="skill-name">${displayName}${isProf?' ★':''}${specHtml}</span>
         <span class="skill-base">${pv>0?pv+'%':base+'%'}</span>
         <span class="skill-total ${isMod?'modified':''}">${total}%</span>
         <div class="skill-bonus-ctrl">
@@ -2332,6 +2366,12 @@ function addBonus(skill, delta) {
   if(delta>0 && Math.min(80,(pv>0?pv:base)+newAdded*20) > 80) return;
   bonusAdded[skill] = newAdded;
   if(bonusAdded[skill] <= 0) delete bonusAdded[skill];
+  renderBonusSkills();
+}
+
+function setBonusSpecialty(skill, val) {
+  if(val) bonusSpecialty[skill] = val;
+  else delete bonusSpecialty[skill];
   renderBonusSkills();
 }
 
@@ -2501,14 +2541,17 @@ function renderSheet() {
   const allNames = [...new Set([...ALL_SKILLS.map(s=>s.name),...Object.keys(ps)])].sort();
 
   const skillsHtml = allNames.map(sname => {
-    const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
+    const skillDef = ALL_SKILLS.find(s=>s.name===sname);
+    const base = skillDef?.base ?? 0;
     const pv = ps[sname] || 0;
     const added = bonusAdded[sname] || 0;
     const total = Math.min(80, (pv>0?pv:base)+added*20);
     const isMod = pv>0 || added>0;
     const isProf = pv>0;
+    const curSpec = skillDef?.specialty ? bonusSpecialty[sname] : null;
+    const displayName = curSpec ? `${sname} (${curSpec})` : sname;
     return `<div class="sheet-skill-item ${isProf?'prof-s':''}">
-      <span class="sheet-skill-name">${sname}${isProf?' ★':''}</span>
+      <span class="sheet-skill-name">${displayName}${isProf?' ★':''}</span>
       <span class="sheet-skill-val ${isMod?'modified':''}">${total}%</span>
     </div>`;
   }).join('');
@@ -3070,9 +3113,10 @@ function newCharacter() {
   stats        = {STR:12,CON:12,DEX:12,INT:12,POW:12,CHA:12};
   selectedProf = null;
   profChoices  = {};
-  bonusAdded   = {};
-  bonds        = [];
-  bondScores   = [];
+  bonusAdded     = {};
+  bonusSpecialty = {};
+  bonds          = [];
+  bondScores     = [];
   weapons      = [];
   gear         = {};
   gearNotes    = '';
@@ -3166,18 +3210,19 @@ function loadCharacter(name) {
   stats        = {...c.stats};
   selectedProf = c.selectedProf || null;
   profChoices  = {...(c.profChoices || {})};
-  bonusAdded   = {...(c.bonusAdded || {})};
-  bonds        = [...(c.bonds || [])];
-  weapons      = [...(c.weapons || [])];
-  gear         = {...(c.gear || {})};
-  gearNotes    = c.gearNotes || '';
-  isEditMode   = true;
-  skillEdits   = {...(c.skillEdits || {})};
-  sanOverride  = c.sanOverride  ?? null;
-  bpOverride   = c.bpOverride   ?? null;
-  hpOverride   = c.hpOverride   ?? null;
-  bondScores   = [...(c.bondScores || [])];
-  portraitData = c.portraitData ?? null;
+  bonusAdded     = {...(c.bonusAdded || {})};
+  bonusSpecialty = {...(c.bonusSpecialty || {})};
+  bonds          = [...(c.bonds || [])];
+  weapons        = [...(c.weapons || [])];
+  gear           = {...(c.gear || {})};
+  gearNotes      = c.gearNotes || '';
+  isEditMode     = true;
+  skillEdits     = {...(c.skillEdits || {})};
+  sanOverride    = c.sanOverride  ?? null;
+  bpOverride     = c.bpOverride   ?? null;
+  hpOverride     = c.hpOverride   ?? null;
+  bondScores     = [...(c.bondScores || [])];
+  portraitData   = c.portraitData ?? null;
   renderPortraitPreview();
   playFieldNotes       = c.playFieldNotes   || '';
   playSessionNotes     = c.playSessionNotes || '';
@@ -3234,18 +3279,19 @@ function importFromJSON(input) {
       stats        = {...c.stats};
       selectedProf = c.selectedProf || null;
       profChoices  = {...(c.profChoices || {})};
-      bonusAdded   = {...(c.bonusAdded || {})};
-      bonds        = [...(c.bonds || [])];
-      weapons      = [...(c.weapons || [])];
-      gear         = {...(c.gear || {})};
-      gearNotes    = c.gearNotes || '';
-      isEditMode   = true;
-      skillEdits   = {...(c.skillEdits || {})};
-      sanOverride  = c.sanOverride ?? null;
-      bpOverride   = c.bpOverride  ?? null;
-      hpOverride   = c.hpOverride  ?? null;
-      bondScores   = [...(c.bondScores || [])];
-      portraitData = c.portraitData ?? null;
+      bonusAdded     = {...(c.bonusAdded || {})};
+      bonusSpecialty = {...(c.bonusSpecialty || {})};
+      bonds          = [...(c.bonds || [])];
+      weapons        = [...(c.weapons || [])];
+      gear           = {...(c.gear || {})};
+      gearNotes      = c.gearNotes || '';
+      isEditMode     = true;
+      skillEdits     = {...(c.skillEdits || {})};
+      sanOverride    = c.sanOverride ?? null;
+      bpOverride     = c.bpOverride  ?? null;
+      hpOverride     = c.hpOverride  ?? null;
+      bondScores     = [...(c.bondScores || [])];
+      portraitData   = c.portraitData ?? null;
       renderPortraitPreview();
       playFieldNotes       = c.playFieldNotes   || '';
       playSessionNotes     = c.playSessionNotes || '';
@@ -3284,7 +3330,8 @@ function buildCharData() {
     stats:       {...stats},
     selectedProf,
     profChoices: {...profChoices},
-    bonusAdded:  {...bonusAdded},
+    bonusAdded:     {...bonusAdded},
+    bonusSpecialty: {...bonusSpecialty},
     bonds:       [...bonds],
     weapons:     [...weapons],
     gear:        {...gear},
@@ -3359,18 +3406,19 @@ function importSharedChar() {
   stats        = {...(c.stats || {})};
   selectedProf = c.selectedProf || null;
   profChoices  = {...(c.profChoices || {})};
-  bonusAdded   = {...(c.bonusAdded || {})};
-  bonds        = [...(c.bonds || [])];
-  weapons      = [...(c.weapons || [])];
-  gear         = {...(c.gear || {})};
-  gearNotes    = c.gearNotes || '';
-  isEditMode   = true;
-  skillEdits   = {...(c.skillEdits || {})};
-  sanOverride  = c.sanOverride ?? null;
-  bpOverride   = c.bpOverride  ?? null;
-  hpOverride   = c.hpOverride  ?? null;
-  bondScores   = [...(c.bondScores || [])];
-  portraitData = c.portraitData ?? null;
+  bonusAdded     = {...(c.bonusAdded || {})};
+  bonusSpecialty = {...(c.bonusSpecialty || {})};
+  bonds          = [...(c.bonds || [])];
+  weapons        = [...(c.weapons || [])];
+  gear           = {...(c.gear || {})};
+  gearNotes      = c.gearNotes || '';
+  isEditMode     = true;
+  skillEdits     = {...(c.skillEdits || {})};
+  sanOverride    = c.sanOverride ?? null;
+  bpOverride     = c.bpOverride  ?? null;
+  hpOverride     = c.hpOverride  ?? null;
+  bondScores     = [...(c.bondScores || [])];
+  portraitData   = c.portraitData ?? null;
   renderPortraitPreview();
   playFieldNotes       = c.playFieldNotes   || '';
   playSessionNotes     = c.playSessionNotes || '';

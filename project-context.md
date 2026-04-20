@@ -1,5 +1,5 @@
 # Project: Delta Green Character Creator
-Last updated: 2026-04-16 by Claude Code
+Last updated: 2026-04-20 by Claude Code
 
 ## What this project is
 A browser-based character creation tool for the Delta Green tabletop RPG. Users
@@ -46,8 +46,8 @@ localStorage save/load, URL-based sharing. Known bug: PDF/print button leads
 to a blank page.
 
 ## Where we left off
-Last commit: c1ca569 — 2026-04-14 — URL sharing, edit mode gaps, improvement rolls, save/load QoL, sheet improvements
-In progress: delta_green_character_creator.html has uncommitted changes (portrait upload feature added this session)
+Last commit: ab853af — 2026-04-16 — Tooltips, structured physical description, AI portrait prompt, Play tab with stats/skills/weapons/bonds/Gemini notes organizer
+In progress: delta_green_character_creator.html has uncommitted changes (specialty skill selection feature)
 Branch: master
 
 ## What's next
@@ -110,6 +110,7 @@ Run /end-of-day at the end of every session.
 Browser tasks, desktop automation, file management.
 
 ## Change log
+- 2026-04-20 — Specialty skill selection for Art, Craft, Military Science, Pilot, Science, Foreign Language in Bonus Skills tab; Science and Foreign Language added to ALL_SKILLS; bonusSpecialty state saved/loaded with character — Source: Claude Code
 - 2026-04-15 — Portrait upload feature (FileReader → base64, saved with character, excluded from URL sharing, displayed on sheet); AI portrait generation attempted via Pollinations.ai and Stable Horde — both failed from localhost environment, scrapped for future session — Source: Claude Code
 - 2026-04-14 — URL sharing (?c= base64 param + import banner); git repo initialized; edit mode gaps (bond scores, HP tracking, New Agent button); improvement rolls (tick + d100/1d6 mechanic); save overwrite warning; JSON export/import; fillable current-value boxes on sheet; gear note lines on sheet — Source: Claude Code
 - 2026-04-13 (session 2) — Moved Weapons & Equipment section after Psychological Data on sheet; added localStorage Save/Load with modal; edit-mode Skills tab (relabeled, +/-1 buttons, no budget cap); adjustable Sanity and Breaking Point in edit mode with Recalc BP button; fixed load bug (onclick double-quote collision) — Source: Claude Code

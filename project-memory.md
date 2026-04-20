@@ -6,6 +6,24 @@ project-context.md doesn't hold. It is Claude's memory between sessions.
 
 ---
 
+## Session — 2026-04-20
+
+**Focus:** Bonus Skills tab specialty selection for skills that require a focus (Art, Craft, Military Science, Pilot, Science, Foreign Language).
+
+**Decisions made:**
+- Added `specialty` field to Art (specialty:'art'), Craft (specialty:'craft'), Military Science (specialty:'mil'), Pilot (specialty:'pilot') in ALL_SKILLS — these already had corresponding OPTIONS arrays
+- Science was missing from ALL_SKILLS entirely; added with `specialty:'sci'` and base:0 after user confirmed against reference sheet image
+- Foreign Language was missing from ALL_SKILLS entirely; added with `specialty:'fl_text'` and base:0 — uses free-text input rather than dropdown because the fixed FL_OPTIONS list is too limiting for all possible languages
+- New `specialty:'fl_text'` type routes to an `<input type="text">` in the skill row; all other specialty types route to a `<select>` using getFreeChoices()
+- `bonusSpecialty` state object (keyed by base skill name) stores chosen specialty; display name becomes "Skill (Specialty)" everywhere — skill rows, sheet, play panel
+- `setBonusSpecialty(skill, val)` function updates state and re-renders; text input uses `onchange` (fires on blur) to avoid re-rendering mid-keystroke
+- `bonusSpecialty` reset in `selectProf()` (profession change clears bonus choices) and `newCharacter()`; saved in `buildCharData()`; restored in all 3 load paths
+
+**Files changed this session:**
+ delta_green_character_creator.html | (uncommitted — specialty skill selection feature)
+
+---
+
 ## Session — 2026-04-16
 
 **Focus:** Tooltips for professions and skills; AI portrait prompt builder from structured physical description fields; Play tab with stat trackers, skills, weapons, bonds, and AI notes organizer.
