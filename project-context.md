@@ -1,5 +1,5 @@
 # Project: Delta Green Character Creator
-Last updated: 2026-04-20 by Claude Code
+Last updated: 2026-04-22 by Claude Code
 
 ## What this project is
 A browser-based character creation tool for the Delta Green tabletop RPG. Users
@@ -46,9 +46,9 @@ localStorage save/load, URL-based sharing. Known bug: PDF/print button leads
 to a blank page.
 
 ## Where we left off
-Last commit: ab853af — 2026-04-16 — Tooltips, structured physical description, AI portrait prompt, Play tab with stats/skills/weapons/bonds/Gemini notes organizer
-In progress: delta_green_character_creator.html has uncommitted changes (specialty skill selection feature)
-Branch: master
+Last commit: 5e6eb40 — Rename to index.html for Vercel deployment
+In progress: none
+Branch: master (pushes to main on GitHub/Vercel)
 
 ## What's next
 
@@ -69,7 +69,7 @@ Branch: master
 - [x] Improvement rolls — roll-over-skill mechanic for post-session advancement in edit mode
 
 ### Deployment
-- [ ] Vercel deploy — push repo to GitHub, connect to Vercel
+- [x] Vercel deploy — https://delta-green-character-creator.vercel.app/
 
 ## File structure
 ```
@@ -110,6 +110,7 @@ Run /end-of-day at the end of every session.
 Browser tasks, desktop automation, file management.
 
 ## Change log
+- 2026-04-22 — Vercel deploy live at https://delta-green-character-creator.vercel.app/; renamed to index.html — Source: Claude Code
 - 2026-04-20 — Specialty skill selection for Art, Craft, Military Science, Pilot, Science, Foreign Language in Bonus Skills tab; Science and Foreign Language added to ALL_SKILLS; bonusSpecialty state saved/loaded with character — Source: Claude Code
 - 2026-04-15 — Portrait upload feature (FileReader → base64, saved with character, excluded from URL sharing, displayed on sheet); AI portrait generation attempted via Pollinations.ai and Stable Horde — both failed from localhost environment, scrapped for future session — Source: Claude Code
 - 2026-04-14 — URL sharing (?c= base64 param + import banner); git repo initialized; edit mode gaps (bond scores, HP tracking, New Agent button); improvement rolls (tick + d100/1d6 mechanic); save overwrite warning; JSON export/import; fillable current-value boxes on sheet; gear note lines on sheet — Source: Claude Code
