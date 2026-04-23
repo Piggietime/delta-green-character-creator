@@ -526,7 +526,7 @@
   }
   .sheet-skill-item:nth-child(3n) { border-right: none; }
   .sheet-skill-item:nth-last-child(-n+3) { border-bottom: none; }
-  .sheet-skill-check { width: 11px; height: 11px; border: 1px solid var(--text3); border-radius: 1px; flex-shrink: 0; }
+  .sheet-skill-check { width: 11px; height: 11px; border: 1px solid var(--text3); border-radius: 1px; flex-shrink: 0; font-size: 9px; line-height: 11px; text-align: center; color: var(--green); }
   .sheet-skill-name { color: var(--text2); }
   .sheet-skill-val { color: var(--text2); font-weight: bold; }
   .sheet-skill-val.modified { color: var(--green-bright); }
@@ -728,7 +728,7 @@
     /* Skills */
     .sheet-skills-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; }
     .sheet-skill-item { border-right: 1px solid #ccc !important; border-bottom: 1px solid #ccc !important; }
-    .sheet-skill-check { border: 1px solid #555 !important; border-radius: 1px !important; width: 11px !important; height: 11px !important; display: inline-block !important; }
+    .sheet-skill-check { border: 1px solid #555 !important; border-radius: 1px !important; width: 11px !important; height: 11px !important; display: inline-block !important; font-size: 9px !important; line-height: 11px !important; text-align: center !important; color: #2a6008 !important; }
     .sheet-skill-name { color: #333 !important; }
     .sheet-skill-val { color: #333 !important; }
     .sheet-skill-val.modified { color: #2a6008 !important; }
@@ -1023,8 +1023,14 @@
     font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
     background: var(--bg); border: 1px solid var(--border2);
     padding: 3px 8px; white-space: nowrap;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    user-select: none;
   }
+  .play-skill-chip:hover { border-color: var(--amber); }
+  .play-skill-chip.checked { border-color: var(--amber); color: var(--amber); }
   .play-skill-chip.prof-skill { border-color: var(--green); color: var(--green); }
+  .play-skill-chip.prof-skill.checked { border-color: var(--green-bright); color: var(--green-bright); }
+  .play-check-box { width: 9px; height: 9px; border: 1px solid currentColor; border-radius: 1px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 7px; }
   .save-btn {
     margin-top: 1rem;
     padding: 10px 20px;
@@ -2556,7 +2562,7 @@ function renderSheet() {
     const curSpec = skillDef?.specialty ? bonusSpecialty[sname] : null;
     const displayName = curSpec ? `${sname} (${curSpec})` : sname;
     return `<div class="sheet-skill-item ${isProf?'prof-s':''}">
-      <span class="sheet-skill-check"></span>
+      <span class="sheet-skill-check" id="sheet-check-${sname}">${tickedSkills[sname]?'✓':''}</span>
       <span class="sheet-skill-name">${displayName}${isProf?' ★':''}</span>
       <span class="sheet-skill-val ${isMod?'modified':''}">${total}%</span>
     </div>`;
@@ -2796,7 +2802,9 @@ function renderPlayPanel() {
       })
       .map(s => {
         const isProf = !!(ps[s.name]);
-        return `<span class="play-skill-chip ${isProf ? 'prof-skill' : ''}" title="${s.desc || ''}">${s.name} ${getSkillTotal(s.name)}%</span>`;
+        const ticked = !!tickedSkills[s.name];
+        const chipId = 'play-chip-' + s.name.replace(/\s+/g, '-');
+        return `<span id="${chipId}" class="play-skill-chip ${isProf?'prof-skill':''} ${ticked?'checked':''}" onclick="playToggleTick('${s.name}')" title="${s.desc||''}"><span class="play-check-box">${ticked?'✓':''}</span>${s.name} ${getSkillTotal(s.name)}%</span>`;
       });
     skillsEl.innerHTML = chips.length ? chips.join('') : '<span style="font-family:var(--mono);font-size:10px;color:var(--text3)">No skills above base yet.</span>';
 
@@ -2812,7 +2820,11 @@ function renderPlayPanel() {
           const raw   = (pv > 0 ? pv : s.base) + added * 20 + edited;
           return raw === s.base;
         })
-        .map(s => `<span class="play-skill-chip" title="${s.desc || ''}" style="color:var(--text3)">${s.name} ${s.base}%</span>`);
+        .map(s => {
+          const ticked = !!tickedSkills[s.name];
+          const chipId = 'play-chip-' + s.name.replace(/\s+/g, '-');
+          return `<span id="${chipId}" class="play-skill-chip ${ticked?'checked':''}" onclick="playToggleTick('${s.name}')" title="${s.desc||''}" style="${ticked?'':'color:var(--text3)'}"><span class="play-check-box">${ticked?'✓':''}</span>${s.name} ${s.base}%</span>`;
+        });
       baseEl.innerHTML = baseChips.join('');
     }
   }
@@ -2893,6 +2905,33 @@ function renderOrganized(type) {
     el.classList.add('has-content');
   } else {
     el.classList.remove('has-content');
+  }
+}
+
+function playToggleTick(skill) {
+  tickedSkills[skill] = !tickedSkills[skill];
+  if(!tickedSkills[skill]) delete tickedSkills[skill];
+  const ticked = !!tickedSkills[skill];
+
+  // Update chip in play panel (targeted — avoids clobbering notes/API key fields)
+  const chipId = 'play-chip-' + skill.replace(/\s+/g, '-');
+  const chip = document.getElementById(chipId);
+  if(chip) {
+    chip.classList.toggle('checked', ticked);
+    const box = chip.querySelector('.play-check-box');
+    if(box) box.textContent = ticked ? '✓' : '';
+  }
+
+  // Update sheet checkbox if sheet is rendered
+  const sheetCheck = document.getElementById('sheet-check-' + skill);
+  if(sheetCheck) sheetCheck.textContent = ticked ? '✓' : '';
+
+  // Sync the improve button in the Skills tab
+  const tickCount = Object.values(tickedSkills).filter(Boolean).length;
+  const improveBtn = document.getElementById('improve-btn');
+  if(improveBtn) {
+    improveBtn.disabled = tickCount === 0;
+    improveBtn.textContent = `↻ Roll Session Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)`;
   }
 }
 
