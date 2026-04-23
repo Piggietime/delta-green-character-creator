@@ -2816,9 +2816,7 @@ function togglePlayPanel() {
 // ── Home Scene ──────────────────────────
 function toggleHomePanel() {
   const overlay = document.getElementById('home-overlay');
-  const btn     = document.getElementById('home-btn');
   const isOpen  = overlay.classList.toggle('open');
-  btn.classList.toggle('active', isOpen);
   if(isOpen) renderHomePanel();
 }
 
