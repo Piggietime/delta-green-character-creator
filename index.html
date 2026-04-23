@@ -915,6 +915,12 @@
   .home-result { font-family:var(--mono); font-size:11px; color:var(--green-bright); margin-top:8px; min-height:18px; }
   .home-log { font-family:var(--mono); font-size:10px; color:var(--text3); border-top:1px solid var(--border); margin-top:1rem; padding-top:0.75rem; }
   .home-log-entry { padding:3px 0; border-bottom:1px solid var(--border); color:var(--text2); }
+  .home-desc { font-family:var(--mono); font-size:10px; color:var(--text3); line-height:1.6; margin-bottom:8px; }
+  .home-outcome { font-family:var(--head); font-size:11px; letter-spacing:1px; margin-bottom:4px; }
+  .home-outcome.crit-success { color:var(--green-bright); }
+  .home-outcome.success { color:var(--green); }
+  .home-outcome.failure { color:var(--amber); }
+  .home-outcome.crit-fail { color:var(--red); }
   /* Play Panel */
   .play-overlay {
     display: none;
@@ -1244,47 +1250,7 @@
         <span style="font-family:var(--head);font-size:18px;letter-spacing:2px;color:var(--amber)">⌂ HOME SCENE</span>
         <button class="play-close-btn" onclick="toggleHomePanel()">✕</button>
       </div>
-      <p style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:1.5rem;letter-spacing:1px;line-height:1.6">Between operations, an agent may: boost a stat by 1, train two skills (+10% each), or add a specialty. Choose one option per home scene.</p>
-
-      <!-- Stat Boost -->
-      <div class="home-section">
-        <div class="home-section-hdr">Option A — Stat Boost (+1 to one stat)</div>
-        <div class="home-section-body">
-          <select class="home-select" id="home-stat-select">
-            <option value="">— choose stat —</option>
-            <option value="STR">Strength (STR)</option>
-            <option value="CON">Constitution (CON)</option>
-            <option value="DEX">Dexterity (DEX)</option>
-            <option value="INT">Intelligence (INT)</option>
-            <option value="POW">Power (POW)</option>
-            <option value="CHA">Charisma (CHA)</option>
-          </select>
-          <button class="home-apply-btn" onclick="homeStatBoost()">Apply +1</button>
-          <div class="home-result" id="home-stat-result"></div>
-        </div>
-      </div>
-
-      <!-- Skill Training -->
-      <div class="home-section">
-        <div class="home-section-hdr">Option B — Skill Training (+10% to two skills)</div>
-        <div class="home-section-body">
-          <select class="home-select" id="home-skill1-select"><option value="">— first skill —</option></select>
-          <select class="home-select" id="home-skill2-select" style="margin-top:6px"><option value="">— second skill —</option></select>
-          <button class="home-apply-btn" onclick="homeSkillTrain()">Apply +10% to Both</button>
-          <div class="home-result" id="home-skill-result"></div>
-        </div>
-      </div>
-
-      <!-- Specialty -->
-      <div class="home-section">
-        <div class="home-section-hdr">Option C — Gain a Specialty</div>
-        <div class="home-section-body">
-          <p style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:6px">Go to the Skills tab and use the specialty dropdown on Art, Craft, Science, Military Science, or Pilot to set or update your focus.</p>
-        </div>
-      </div>
-
-      <!-- Log -->
-      <div id="home-log-container"></div>
+      <div id="home-panel-body"></div>
     </div>
   </div>
 
@@ -2855,46 +2821,244 @@ function toggleHomePanel() {
 }
 
 function renderHomePanel() {
-  // Populate skill dropdowns with all current skills
+  const currentSAN = sanOverride !== null ? sanOverride : stats.POW * 5;
+  const chaTarget  = stats.CHA * 5;
+  const bondOpts   = bonds.map((b, i) => {
+    const score = bondScores[i] ?? stats.CHA;
+    return `<option value="${i}">${b || 'Bond ' + (i+1)} (score: ${score})</option>`;
+  }).join('');
+  const hasBonds = bonds.length > 0;
+
   const ps = getProfSkills();
   const allNames = [...new Set([...ALL_SKILLS.map(s=>s.name),...Object.keys(ps)])].sort();
-  const opts = allNames.map(n => `<option value="${n}">${n} (${getSkillTotal(n)}%)</option>`).join('');
-  ['home-skill1-select','home-skill2-select'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) { const cur = el.value; el.innerHTML = `<option value="">— choose skill —</option>${opts}`; if(cur) el.value = cur; }
-  });
+  const skillOpts = allNames.map(n => `<option value="${n}">${n} (${getSkillTotal(n)}%)</option>`).join('');
+
+  document.getElementById('home-panel-body').innerHTML = `
+    <p class="home-desc" style="margin-bottom:1.5rem">Choose one pursuit per home scene. Each reflects what your agent does between operations. Changes auto-save.</p>
+
+    <div class="home-section">
+      <div class="home-section-hdr">Fulfill Responsibilities</div>
+      <div class="home-section-body">
+        <p class="home-desc">Maintain your normal life — family, work, obligations. Roll SAN check (target: ${currentSAN}).<br>
+        Success: +1d6 to Bond · Crit: +1d6 Bond &amp; +1 SAN · Fail: +1 Bond · Crit Fail: −1d4 Bond &amp; −1 SAN</p>
+        ${hasBonds ? `<select class="home-select" id="hr-bond"><option value="">— which bond? —</option>${bondOpts}</select>` : '<p class="home-desc" style="color:var(--red)">No bonds recorded.</p>'}
+        <button class="home-apply-btn" onclick="homeResponsibilities()">Roll SAN Check (d100)</button>
+        <div class="home-result" id="hr-result"></div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-hdr">Back to Nature</div>
+      <div class="home-section-body">
+        <p class="home-desc">Isolation or outdoor hobbies to clear the mind. Costs −1 to a Bond (neglecting others). Roll SAN check (target: ${currentSAN}).<br>
+        Success: +1d4 SAN · Crit: +4 SAN</p>
+        ${hasBonds ? `<select class="home-select" id="btn-bond"><option value="">— bond to neglect (−1) —</option>${bondOpts}</select>` : ''}
+        <button class="home-apply-btn" onclick="homeNature()">Roll SAN Check (d100)</button>
+        <div class="home-result" id="btn-result"></div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-hdr">Go to Therapy</div>
+      <div class="home-section-body">
+        <p class="home-desc">Seek professional help. Roll SAN check (target: ${currentSAN}).<br>
+        Success: +1d6 SAN · Crit: +6 SAN (may remove a disorder — GM ruling)</p>
+        <button class="home-apply-btn" onclick="homeTherapy()">Roll SAN Check (d100)</button>
+        <div class="home-result" id="therapy-result"></div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-hdr">Establish a New Bond</div>
+      <div class="home-section-body">
+        <p class="home-desc">Build a new relationship. Costs −1 to an existing Bond. Roll CHA×5 (target: ${chaTarget}).<br>
+        Success: New Bond at CHA÷2 (${Math.floor(stats.CHA/2)})</p>
+        <input type="text" class="home-select" id="nb-name" placeholder="Name of new bond…" style="margin-bottom:6px">
+        ${hasBonds ? `<select class="home-select" id="nb-sacrifice"><option value="">— bond to reduce (−1) —</option>${bondOpts}</select>` : ''}
+        <button class="home-apply-btn" onclick="homeNewBond()">Roll CHA×5 (d100)</button>
+        <div class="home-result" id="nb-result"></div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-hdr">Improve Skills (Training)</div>
+      <div class="home-section-body">
+        <p class="home-desc">Study or practice. No roll required. Add +10% to two skills.</p>
+        <select class="home-select" id="home-skill1-select"><option value="">— first skill —</option>${skillOpts}</select>
+        <select class="home-select" id="home-skill2-select" style="margin-top:6px"><option value="">— second skill —</option>${skillOpts}</select>
+        <button class="home-apply-btn" onclick="homeSkillTrain()">Apply +10% to Both</button>
+        <div class="home-result" id="home-skill-result"></div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <div class="home-section-hdr">Gain a Specialty</div>
+      <div class="home-section-body">
+        <p class="home-desc">Focus your skills. Use the specialty dropdown on Art, Craft, Science, Military Science, or Pilot in the Skills tab.</p>
+      </div>
+    </div>
+
+    <div id="home-log-container"></div>`;
   renderHomeLog();
 }
 
 function renderHomeLog() {
   const el = document.getElementById('home-log-container');
-  if(!el) return;
-  if(!homeSceneLog.length) { el.innerHTML = ''; return; }
+  if(!el || !homeSceneLog.length) { if(el) el.innerHTML = ''; return; }
   el.innerHTML = `<div class="home-log">
     <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">HOME SCENE LOG</div>
     ${homeSceneLog.slice().reverse().map(e => `<div class="home-log-entry">${e}</div>`).join('')}
   </div>`;
 }
 
-function homeStatBoost() {
-  const stat = document.getElementById('home-stat-select').value;
-  if(!stat) { document.getElementById('home-stat-result').textContent = 'Select a stat first.'; return; }
-  stats[stat] = Math.min(18, (stats[stat] || 10) + 1);
-  const entry = `${new Date().toLocaleDateString()} — Stat boost: ${stat} → ${stats[stat]}`;
-  homeSceneLog.push(entry);
+function homeD100(target) {
+  const roll = Math.floor(Math.random() * 100) + 1;
+  const critThresh = Math.max(1, Math.floor(target / 5));
+  let outcome;
+  if     (roll <= critThresh) outcome = 'critical_success';
+  else if(roll <= target)     outcome = 'success';
+  else if(roll >= 96)         outcome = 'critical_failure';
+  else                        outcome = 'failure';
+  return { roll, outcome };
+}
+
+function homeApplySAN(delta) {
+  const cur = sanOverride !== null ? sanOverride : stats.POW * 5;
+  sanOverride = Math.min(99, Math.max(0, cur + delta));
   updateDerived();
-  document.getElementById('home-stat-result').textContent = `${stat} is now ${stats[stat]}.`;
-  document.getElementById('home-stat-select').value = '';
-  renderHomeLog();
-  saveCharacter(null, true);
+}
+
+function homeBondAdjust(idx, delta) {
+  if(idx === '' || idx === null || isNaN(parseInt(idx))) return;
+  const i = parseInt(idx);
+  bondScores[i] = Math.min(stats.CHA, Math.max(0, (bondScores[i] ?? stats.CHA) + delta));
+}
+
+function homeOutcomeHtml(roll, target, label) {
+  const cls = label === 'Critical Success' ? 'crit-success' : label === 'Success' ? 'success' : label === 'Failure' ? 'failure' : 'crit-fail';
+  return `<div class="home-outcome ${cls}">${label}</div><div class="home-desc">Rolled ${roll} vs ${target}</div>`;
+}
+
+function homeResponsibilities() {
+  const currentSAN = sanOverride !== null ? sanOverride : stats.POW * 5;
+  const bondIdx = document.getElementById('hr-bond')?.value;
+  const { roll, outcome } = homeD100(currentSAN);
+  let msg = homeOutcomeHtml(roll, currentSAN, outcome === 'critical_success' ? 'Critical Success' : outcome === 'success' ? 'Success' : outcome === 'critical_failure' ? 'Critical Failure' : 'Failure');
+  let log = `${new Date().toLocaleDateString()} — Fulfill Responsibilities: rolled ${roll} vs ${currentSAN}`;
+
+  if(outcome === 'critical_success') {
+    const gain = Math.ceil(Math.random() * 6);
+    homeBondAdjust(bondIdx, gain); homeApplySAN(1);
+    msg += `<div class="home-desc" style="color:var(--green-bright)">Bond +${gain}, SAN +1 → ${sanOverride}</div>`;
+    log += ` — Crit Success: Bond +${gain}, SAN +1`;
+  } else if(outcome === 'success') {
+    const gain = Math.ceil(Math.random() * 6);
+    homeBondAdjust(bondIdx, gain);
+    msg += `<div class="home-desc" style="color:var(--green)">Bond +${gain}</div>`;
+    log += ` — Success: Bond +${gain}`;
+  } else if(outcome === 'critical_failure') {
+    const loss = Math.ceil(Math.random() * 4);
+    homeBondAdjust(bondIdx, -loss); homeApplySAN(-1);
+    msg += `<div class="home-desc" style="color:var(--red)">Bond −${loss}, SAN −1 → ${sanOverride}</div>`;
+    log += ` — Crit Failure: Bond −${loss}, SAN −1`;
+  } else {
+    homeBondAdjust(bondIdx, 1);
+    msg += `<div class="home-desc" style="color:var(--amber)">Bond +1</div>`;
+    log += ` — Failure: Bond +1`;
+  }
+  homeSceneLog.push(log);
+  document.getElementById('hr-result').innerHTML = msg;
+  renderHomeLog(); renderSheet(); saveCharacter(null, true);
+}
+
+function homeNature() {
+  const currentSAN = sanOverride !== null ? sanOverride : stats.POW * 5;
+  const bondIdx = document.getElementById('btn-bond')?.value;
+  if(!bondIdx && bonds.length) { document.getElementById('btn-result').innerHTML = '<div class="home-desc" style="color:var(--red)">Select a bond to neglect.</div>'; return; }
+  homeBondAdjust(bondIdx, -1);
+  const { roll, outcome } = homeD100(currentSAN);
+  let msg = homeOutcomeHtml(roll, currentSAN, outcome === 'critical_success' ? 'Critical Success' : outcome === 'success' ? 'Success' : outcome === 'critical_failure' ? 'Critical Failure' : 'Failure');
+  let log = `${new Date().toLocaleDateString()} — Back to Nature: rolled ${roll} vs ${currentSAN}, Bond −1`;
+
+  if(outcome === 'critical_success') {
+    homeApplySAN(4);
+    msg += `<div class="home-desc" style="color:var(--green-bright)">SAN +4 → ${sanOverride}. Bond −1 (cost).</div>`;
+    log += ` — Crit Success: SAN +4`;
+  } else if(outcome === 'success') {
+    const gain = Math.ceil(Math.random() * 4);
+    homeApplySAN(gain);
+    msg += `<div class="home-desc" style="color:var(--green)">SAN +${gain} → ${sanOverride}. Bond −1 (cost).</div>`;
+    log += ` — Success: SAN +${gain}`;
+  } else {
+    msg += `<div class="home-desc" style="color:var(--amber)">No SAN gain. Bond −1 (cost).</div>`;
+    log += ` — Failure: no SAN gain`;
+  }
+  homeSceneLog.push(log);
+  document.getElementById('btn-result').innerHTML = msg;
+  renderHomeLog(); renderSheet(); saveCharacter(null, true);
+}
+
+function homeTherapy() {
+  const currentSAN = sanOverride !== null ? sanOverride : stats.POW * 5;
+  const { roll, outcome } = homeD100(currentSAN);
+  let msg = homeOutcomeHtml(roll, currentSAN, outcome === 'critical_success' ? 'Critical Success' : outcome === 'success' ? 'Success' : outcome === 'critical_failure' ? 'Critical Failure' : 'Failure');
+  let log = `${new Date().toLocaleDateString()} — Therapy: rolled ${roll} vs ${currentSAN}`;
+
+  if(outcome === 'critical_success') {
+    homeApplySAN(6);
+    msg += `<div class="home-desc" style="color:var(--green-bright)">SAN +6 → ${sanOverride}. GM may remove a disorder.</div>`;
+    log += ` — Crit Success: SAN +6 (disorder possible)`;
+  } else if(outcome === 'success') {
+    const gain = Math.ceil(Math.random() * 6);
+    homeApplySAN(gain);
+    msg += `<div class="home-desc" style="color:var(--green)">SAN +${gain} → ${sanOverride}.</div>`;
+    log += ` — Success: SAN +${gain}`;
+  } else if(outcome === 'critical_failure') {
+    msg += `<div class="home-desc" style="color:var(--red)">No benefit. Sharing too much may have consequences — GM ruling.</div>`;
+    log += ` — Crit Failure`;
+  } else {
+    msg += `<div class="home-desc" style="color:var(--amber)">No SAN gain.</div>`;
+    log += ` — Failure`;
+  }
+  homeSceneLog.push(log);
+  document.getElementById('therapy-result').innerHTML = msg;
+  renderHomeLog(); renderSheet(); saveCharacter(null, true);
+}
+
+function homeNewBond() {
+  const name = document.getElementById('nb-name')?.value.trim();
+  const sacrificeIdx = document.getElementById('nb-sacrifice')?.value;
+  const chaTarget = stats.CHA * 5;
+  const result = document.getElementById('nb-result');
+  if(!name) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Enter the name of the new bond.</div>'; return; }
+  if(bonds.length && !sacrificeIdx) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Select a bond to reduce (−1 cost).</div>'; return; }
+  homeBondAdjust(sacrificeIdx, -1);
+  const { roll, outcome } = homeD100(chaTarget);
+  let msg = homeOutcomeHtml(roll, chaTarget, outcome === 'critical_success' || outcome === 'success' ? 'Success' : 'Failure');
+  let log = `${new Date().toLocaleDateString()} — New Bond: rolled ${roll} vs CHA×5 (${chaTarget})`;
+
+  if(outcome === 'critical_success' || outcome === 'success') {
+    const newScore = Math.floor(stats.CHA / 2);
+    bonds.push(name);
+    bondScores.push(newScore);
+    msg += `<div class="home-desc" style="color:var(--green-bright)">New Bond "${name}" added at score ${newScore}.</div>`;
+    log += ` — Success: New bond "${name}" (${newScore})`;
+  } else {
+    msg += `<div class="home-desc" style="color:var(--amber)">Failed to establish bond. Bond sacrifice still applies.</div>`;
+    log += ` — Failure`;
+  }
+  homeSceneLog.push(log);
+  result.innerHTML = msg;
+  document.getElementById('nb-name').value = '';
+  renderHomeLog(); renderSheet(); renderBonds(); saveCharacter(null, true);
 }
 
 function homeSkillTrain() {
   const s1 = document.getElementById('home-skill1-select').value;
   const s2 = document.getElementById('home-skill2-select').value;
   const result = document.getElementById('home-skill-result');
-  if(!s1 || !s2) { result.textContent = 'Select two skills.'; return; }
-  if(s1 === s2) { result.textContent = 'Choose two different skills.'; return; }
+  if(!s1 || !s2) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Select two skills.</div>'; return; }
+  if(s1 === s2) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Choose two different skills.</div>'; return; }
   [s1, s2].forEach(sname => {
     const cur = getSkillTotal(sname);
     if(cur >= 99) return;
@@ -2902,20 +3066,13 @@ function homeSkillTrain() {
     const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
     const pv = ps[sname] || 0;
     const added = bonusAdded[sname] || 0;
-    const baseTotal = (pv > 0 ? pv : base) + added * 20;
-    skillEdits[sname] = Math.min(99, cur + 10) - baseTotal;
+    skillEdits[sname] = Math.min(99, cur + 10) - ((pv > 0 ? pv : base) + added * 20);
     if(skillEdits[sname] === 0) delete skillEdits[sname];
   });
   const t1 = getSkillTotal(s1), t2 = getSkillTotal(s2);
-  const entry = `${new Date().toLocaleDateString()} — Skill training: ${s1} → ${t1}%, ${s2} → ${t2}%`;
-  homeSceneLog.push(entry);
-  result.textContent = `${s1} → ${t1}%, ${s2} → ${t2}%`;
-  document.getElementById('home-skill1-select').value = '';
-  document.getElementById('home-skill2-select').value = '';
-  renderHomeLog();
-  renderBonusSkills();
-  renderSheet();
-  saveCharacter(null, true);
+  homeSceneLog.push(`${new Date().toLocaleDateString()} — Skill training: ${s1} → ${t1}%, ${s2} → ${t2}%`);
+  result.innerHTML = `<div class="home-desc" style="color:var(--green)">${s1} → ${t1}%, ${s2} → ${t2}%</div>`;
+  renderHomeLog(); renderBonusSkills(); renderSheet(); saveCharacter(null, true);
 }
 
 function renderPlayPanel() {
