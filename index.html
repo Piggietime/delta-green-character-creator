@@ -26,7 +26,7 @@
     --body: 'Source Sans 3', sans-serif;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-variant-numeric: slashed-zero; }
 
   body {
     background: var(--bg);
@@ -515,16 +515,18 @@
   .sheet-cell-val { font-size: 14px; color: var(--text); }
   .sheet-skills-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
   .sheet-skill-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 14px 1fr auto;
     align-items: center;
-    padding: 5px 14px;
+    gap: 4px;
+    padding: 5px 8px;
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     font-size: 11px;
   }
   .sheet-skill-item:nth-child(3n) { border-right: none; }
   .sheet-skill-item:nth-last-child(-n+3) { border-bottom: none; }
+  .sheet-skill-check { width: 11px; height: 11px; border: 1px solid var(--text3); border-radius: 1px; flex-shrink: 0; }
   .sheet-skill-name { color: var(--text2); }
   .sheet-skill-val { color: var(--text2); font-weight: bold; }
   .sheet-skill-val.modified { color: var(--green-bright); }
@@ -672,6 +674,7 @@
   .sheet-gear-note-line { border-bottom: 1px solid var(--border); margin: 4px 0 4px 8px; }
   .sheet-gear-notes { padding: 6px 14px; font-family: var(--mono); font-size: 11px; color: var(--text2); border-top: 1px solid var(--border); }
 
+  @page { margin: 0.5in; }
   @media print {
     body { background: white !important; color: #111 !important; }
     body::before { display: none !important; }
@@ -725,6 +728,7 @@
     /* Skills */
     .sheet-skills-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; }
     .sheet-skill-item { border-right: 1px solid #ccc !important; border-bottom: 1px solid #ccc !important; }
+    .sheet-skill-check { border: 1px solid #555 !important; border-radius: 1px !important; width: 11px !important; height: 11px !important; display: inline-block !important; }
     .sheet-skill-name { color: #333 !important; }
     .sheet-skill-val { color: #333 !important; }
     .sheet-skill-val.modified { color: #2a6008 !important; }
@@ -2429,6 +2433,7 @@ function rollImprovements() {
   tickedSkills = {};
   lastImprovementResults = results;
   renderBonusSkills();
+  renderSheet();
 }
 
 function getSkillTotal(skillName) {
@@ -2542,15 +2547,16 @@ function renderSheet() {
 
   const skillsHtml = allNames.map(sname => {
     const skillDef = ALL_SKILLS.find(s=>s.name===sname);
-    const base = skillDef?.base ?? 0;
     const pv = ps[sname] || 0;
     const added = bonusAdded[sname] || 0;
-    const total = Math.min(80, (pv>0?pv:base)+added*20);
-    const isMod = pv>0 || added>0;
+    const edited = isEditMode ? (skillEdits[sname] || 0) : 0;
+    const total = getSkillTotal(sname);
+    const isMod = pv>0 || added>0 || edited!==0;
     const isProf = pv>0;
     const curSpec = skillDef?.specialty ? bonusSpecialty[sname] : null;
     const displayName = curSpec ? `${sname} (${curSpec})` : sname;
     return `<div class="sheet-skill-item ${isProf?'prof-s':''}">
+      <span class="sheet-skill-check"></span>
       <span class="sheet-skill-name">${displayName}${isProf?' ★':''}</span>
       <span class="sheet-skill-val ${isMod?'modified':''}">${total}%</span>
     </div>`;
