@@ -1,5 +1,5 @@
 # Project: Delta Green Character Creator
-Last updated: 2026-04-22 by Claude Code
+Last updated: 2026-04-23 by Claude Code
 
 ## What this project is
 A browser-based character creation tool for the Delta Green tabletop RPG. Users
@@ -46,9 +46,9 @@ localStorage save/load, URL-based sharing. Known bug: PDF/print button leads
 to a blank page.
 
 ## Where we left off
-Last commit: 5e6eb40 — Rename to index.html for Vercel deployment
+Last commit: 1eb528a — Fix print wrapper border: explicitly clear all sides before restoring border-top only
 In progress: none
-Branch: master (pushes to main on GitHub/Vercel)
+Branch: main
 
 ## What's next
 
@@ -110,6 +110,7 @@ Run /end-of-day at the end of every session.
 Browser tasks, desktop automation, file management.
 
 ## Change log
+- 2026-04-23 — Play mode skill checkboxes synced to sheet; Level Up button with confirm; Home Scene full redesign (DG rules); Home Scene button moved to Skills tab; Improve Skills/Stats corrected (fail-to-gain, 3d6%/+1 stat, bond cost); print layout: compact skills/stats/derived, fixed bonds height, page-break before Psych Data, border artifact fixes — Source: Claude Code
 - 2026-04-22 — Vercel deploy live at https://delta-green-character-creator.vercel.app/; renamed to index.html — Source: Claude Code
 - 2026-04-20 — Specialty skill selection for Art, Craft, Military Science, Pilot, Science, Foreign Language in Bonus Skills tab; Science and Foreign Language added to ALL_SKILLS; bonusSpecialty state saved/loaded with character — Source: Claude Code
 - 2026-04-15 — Portrait upload feature (FileReader → base64, saved with character, excluded from URL sharing, displayed on sheet); AI portrait generation attempted via Pollinations.ai and Stable Horde — both failed from localhost environment, scrapped for future session — Source: Claude Code

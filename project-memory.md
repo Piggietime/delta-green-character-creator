@@ -6,6 +6,33 @@ project-context.md doesn't hold. It is Claude's memory between sessions.
 
 ---
 
+## Session — 2026-04-23
+
+**Focus:** Friend feedback fixes, play mode skill checkboxes, Level Up button, Home Scene panel, print layout.
+
+**Decisions made:**
+- `font-variant-numeric: slashed-zero` moved to `* {}` selector (was incorrectly inside `:root {}`)
+- `@page { margin: 0.5in; }` added for print margins
+- Skill checkboxes added to play mode chips — `playToggleTick()` and `toggleTick()` each update both sides (play chip + Skills tab button + sheet checkbox) via targeted DOM queries; IDs: `play-chip-${name}`, `data-tick="${name}"`, `sheet-check-${name}`
+- Level Up button added at top of Skills tab (edit mode only); replaces old bottom "Roll Session Improvements" button; shows tick count; confirm dialog before rolling
+- Skill advancement rules corrected: 1d4 straight addition on failed checks (not d100 gating + 1d6); Unnatural advances on success — based on user-provided rulebook screenshot
+- Home Scene button moved from header to Skills tab (next to Level Up) — both needed post-session; null-ref bug fixed (`toggleHomePanel` was calling `getElementById('home-btn')` which no longer existed)
+- Home Scene panel fully redesigned with official DG rules: Fulfill Responsibilities (SAN check, bond effects for 4 outcomes), Back to Nature (−1 bond cost, SAN gain on success), Go to Therapy (SAN gain, crit removes disorder), Establish a New Bond (CHA×5 roll), Improve Skills/Stats (fail-to-gain, 3d6% or +1 stat, bond cost per improvement)
+- Improve Skills/Stats corrected per rulebook: roll stat×5 or skill%; FAIL triggers gain (+3d6% skill or +1 stat, max 99%/18); each improvement costs −1 to one bond (not Delta Green bond); two slots support skill or stat
+- Bonds section fixed to always render 6 rows (blank underlines for unused slots) for consistent print height
+- Print layout: skills compact (10.5px / 3px padding), stats/derived shrunk (15px value, tighter padding), page-break-before on Psychological Data section
+- Print border artifacts fixed: `sheet-wrapper` needed `border: none !important` before `border-top` (non-print CSS had `border: 1px solid` that was falling through); nth-child/nth-last-child border exceptions re-stated with `!important` in print block to override base skill item rule
+
+**Problems solved:**
+- Home Scene panel blank on open — `toggleHomePanel()` called `getElementById('home-btn')` after button was moved out of header; removed the dead reference
+- Skills still split over 2 pages — compacted skill rows in print (2px→3px padding, 9.5px→10.5px font); freed space by shrinking stats/derived sections
+- Side lines extending past skills grid in print — two causes: (1) `border: 1px solid` on `sheet-wrapper` from non-print CSS falling through because print override only set `border-top` without clearing other sides; (2) `!important` on `.sheet-skill-item` print rule overriding nth-child selectors that remove borders from rightmost column and last row
+
+**Files changed this session:**
+ index.html | 547 +++++++++++++++++++++++++++++++++++++++++++++++++++---------
+
+---
+
 ## Session — 2026-04-20
 
 **Focus:** Bonus Skills tab specialty selection for skills that require a focus (Art, Craft, Military Science, Pilot, Science, Foreign Language).
