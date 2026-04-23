@@ -721,12 +721,11 @@
     .sheet-portrait-img { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
     .sheet-portrait-empty { border: 1px dashed #ccc !important; color: #aaa !important; }
 
-    /* Bonds */
-    .sheet-bond-row { border-bottom: 1px solid #ccc !important; color: #111 !important; }
+    /* Bonds — fixed row height so section is always compact */
+    .sheet-bond-row { border-bottom: 1px solid #ccc !important; color: #111 !important; height: 28px !important; max-height: 28px !important; overflow: hidden !important; box-sizing: border-box !important; }
     .sheet-bond-score { color: #7a5800 !important; }
 
-    /* Skills — always start on a fresh page */
-    .sheet-skills-section { page-break-before: always !important; }
+    /* Skills */
     .sheet-skills-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; }
     .sheet-skill-item { border-right: 1px solid #ccc !important; border-bottom: 1px solid #ccc !important; }
     .sheet-skill-check { border: 1px solid #555 !important; border-radius: 1px !important; width: 11px !important; height: 11px !important; display: inline-block !important; font-size: 9px !important; line-height: 11px !important; text-align: center !important; color: #2a6008 !important; }
