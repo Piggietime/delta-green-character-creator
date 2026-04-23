@@ -688,7 +688,7 @@
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
     /* Sheet structure */
-    .sheet-wrapper { border: 1px solid #999 !important; background: white !important; }
+    .sheet-wrapper { border-top: 1px solid #999 !important; background: white !important; }
     .sheet-top-bar { background: #2a5a08 !important; }
     .sheet-top-bar span { color: #a0d060 !important; }
     .sheet-top-bar small { color: rgba(160,208,96,0.8) !important; }
@@ -716,8 +716,8 @@
     .sheet-current-v { color: #666 !important; font-size: 9px !important; }
     .sheet-current-box { border-bottom: 1px solid #888 !important; color: #333 !important; }
 
-    /* Psychological Data — always start on new page */
-    .sheet-psych-section { page-break-before: always !important; }
+    /* Psychological Data — always start on new page with its own top border */
+    .sheet-psych-section { page-break-before: always !important; border-top: 1px solid #999 !important; }
 
     /* Portrait */
     .sheet-portrait-box { border-left: 1px solid #ccc !important; }
