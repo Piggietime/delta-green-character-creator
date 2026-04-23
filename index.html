@@ -783,7 +783,7 @@
   .improve-btn:hover:not(:disabled) { background: rgba(200,168,64,0.1); }
   .improve-btn:disabled { border-color: var(--border2); color: var(--text3); cursor: default; }
   .levelup-btn {
-    display: block; width: 100%; padding: 12px;
+    display: block; flex: 1; padding: 12px;
     background: var(--green-dim); border: 2px solid var(--green);
     color: var(--green-bright); font-family: var(--mono); font-size: 12px;
     letter-spacing: 2px; cursor: pointer; text-transform: uppercase;
@@ -1237,7 +1237,6 @@
     <div class="dg-class">TOP SECRET // ORCON // SPECIAL ACCESS REQUIRED</div>
     <div class="header-btns">
       <button class="new-char-btn" onclick="newCharacter()">✦ New Agent</button>
-      <button class="home-btn" id="home-btn" onclick="toggleHomePanel()" style="display:none">⌂ Home Scene</button>
       <button class="play-btn" id="play-btn" onclick="togglePlayPanel()">▶ Play</button>
       <button class="load-btn" onclick="openLoadModal()">⬆ Load Agent</button>
     </div>
@@ -2352,7 +2351,10 @@ function renderBonusSkills() {
     content.innerHTML = `
       <div class="section-title">Skills</div>
       <p style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:1rem;letter-spacing:1px">Tick skills you <em>failed</em> a check on this session (Unnatural: tick on success). Each gains +1d4% at end of session. ★ = profession skill.</p>
-      <button class="levelup-btn" onclick="levelUp()" ${tickCount===0?'disabled':''}>⬆ LEVEL UP — Roll Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)</button>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="levelup-btn" onclick="levelUp()" ${tickCount===0?'disabled':''}>⬆ LEVEL UP — Roll Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)</button>
+        <button class="home-btn" onclick="toggleHomePanel()">⌂ Home Scene</button>
+      </div>
       <div class="skills-header skills-header-edit" style="margin-top:1rem">
         <span style="text-align:center">Tick</span><span>Skill</span><span style="text-align:center">Base</span><span style="text-align:center">Total</span><span style="text-align:center">Adjust</span>
       </div>
@@ -3504,7 +3506,6 @@ function newCharacter() {
   document.getElementById('p-nationality').value = 'American';
   document.getElementById('p-sex').value = 'F';
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Bonus Skills';
-  document.getElementById('home-btn').style.display = 'none';
   goStep(0);
 }
 
@@ -3593,7 +3594,6 @@ function loadCharacter(name) {
   homeSceneLog         = [...(c.homeSceneLog || [])];
   renderPlayPanel();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
-  document.getElementById('home-btn').style.display = '';
   closeLoadModal();
   goStep(6);
 }
@@ -3663,7 +3663,6 @@ function importFromJSON(input) {
       playSessionOrganized = c.playSessionOrganized || '';
       renderPlayPanel();
       document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
-  document.getElementById('home-btn').style.display = '';
       input.value = '';
       closeLoadModal();
       goStep(6);
@@ -3793,7 +3792,6 @@ function importSharedChar() {
   homeSceneLog         = [...(c.homeSceneLog || [])];
   renderPlayPanel();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
-  document.getElementById('home-btn').style.display = '';
   dismissImportBanner();
   goStep(6);
 }
