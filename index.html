@@ -701,20 +701,23 @@
     .sheet-cell-label { color: #666 !important; }
     .sheet-cell-val { color: #111 !important; }
 
-    /* Stats */
+    /* Stats — compact in print */
     .sheet-stat-grid { border-bottom: 1px solid #ccc !important; }
-    .sheet-stat-cell { border-right: 1px solid #ccc !important; }
+    .sheet-stat-cell { border-right: 1px solid #ccc !important; padding: 5px 8px !important; }
     .sheet-stat-k { color: #666 !important; }
-    .sheet-stat-v { color: #111 !important; font-size: 20px !important; }
+    .sheet-stat-v { color: #111 !important; font-size: 15px !important; }
     .sheet-stat-x5 { color: #666 !important; }
 
-    /* Derived */
-    .sheet-derived-grid { display: grid !important; grid-template-columns: repeat(4,1fr) !important; gap: 6px !important; padding: 8px 14px !important; }
-    .sheet-derived-cell { background: #f0f0eb !important; border: 1px solid #ccc !important; border-radius: 3px !important; }
-    .sheet-derived-k { color: #555 !important; }
-    .sheet-derived-v { color: #7a5800 !important; }
-    .sheet-current-v { color: #666 !important; }
+    /* Derived — compact in print */
+    .sheet-derived-grid { display: grid !important; grid-template-columns: repeat(4,1fr) !important; gap: 4px !important; padding: 5px 14px !important; }
+    .sheet-derived-cell { background: #f0f0eb !important; border: 1px solid #ccc !important; border-radius: 3px !important; padding: 5px !important; }
+    .sheet-derived-k { color: #555 !important; font-size: 8px !important; }
+    .sheet-derived-v { color: #7a5800 !important; font-size: 16px !important; }
+    .sheet-current-v { color: #666 !important; font-size: 9px !important; }
     .sheet-current-box { border-bottom: 1px solid #888 !important; color: #333 !important; }
+
+    /* Psychological Data — always start on new page */
+    .sheet-psych-section { page-break-before: always !important; }
 
     /* Portrait */
     .sheet-portrait-box { border-left: 1px solid #ccc !important; }
@@ -727,7 +730,7 @@
 
     /* Skills — compact in print so all rows fit on one page */
     .sheet-skills-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; }
-    .sheet-skill-item { border-right: 1px solid #ccc !important; border-bottom: 1px solid #ccc !important; padding: 2px 6px !important; font-size: 9.5px !important; gap: 3px !important; }
+    .sheet-skill-item { border-right: 1px solid #ccc !important; border-bottom: 1px solid #ccc !important; padding: 3px 6px !important; font-size: 10.5px !important; gap: 3px !important; }
     .sheet-skill-check { border: 1px solid #555 !important; border-radius: 1px !important; width: 9px !important; height: 9px !important; display: inline-block !important; font-size: 8px !important; line-height: 9px !important; text-align: center !important; color: #2a6008 !important; }
     .sheet-skill-name { color: #333 !important; }
     .sheet-skill-val { color: #333 !important; }
@@ -2702,7 +2705,7 @@ function renderSheet() {
       <div class="sheet-skills-grid">${skillsHtml}</div>
     </div>
 
-    <div class="sheet-section">
+    <div class="sheet-section sheet-psych-section">
       <div class="sheet-section-hdr">12 — Psychological Data</div>
       <div class="sheet-row">
         <div class="sheet-cell" style="min-height:80px"><div class="sheet-cell-label">Motivations & Mental Disorders</div><div class="sheet-cell-val" style="color:var(--text3);font-size:12px">[Fill in play]</div></div>
