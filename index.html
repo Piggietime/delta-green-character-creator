@@ -725,7 +725,8 @@
     .sheet-bond-row { border-bottom: 1px solid #ccc !important; color: #111 !important; }
     .sheet-bond-score { color: #7a5800 !important; }
 
-    /* Skills */
+    /* Skills — always start on a fresh page */
+    .sheet-skills-section { page-break-before: always !important; }
     .sheet-skills-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; }
     .sheet-skill-item { border-right: 1px solid #ccc !important; border-bottom: 1px solid #ccc !important; }
     .sheet-skill-check { border: 1px solid #555 !important; border-radius: 1px !important; width: 11px !important; height: 11px !important; display: inline-block !important; font-size: 9px !important; line-height: 11px !important; text-align: center !important; color: #2a6008 !important; }
@@ -2621,11 +2622,14 @@ function renderSheet() {
     </div>`;
   }).join('');
 
-  const bondsHtml = bonds.map((b,i) => {
-    if(!b) return '';
+  const BOND_ROWS = 6;
+  const filledBonds = bonds.map((b,i) => {
+    if(!b) return null;
     const score = (isEditMode && bondScores[i] !== undefined) ? bondScores[i] : stats.CHA;
     return `<div class="sheet-bond-row"><span>${b}</span><span class="sheet-bond-score">${score}</span></div>`;
-  }).filter(Boolean).join('') || '<div class="sheet-bond-row" style="color:var(--text3)">No bonds recorded</div>';
+  }).filter(Boolean);
+  while(filledBonds.length < BOND_ROWS) filledBonds.push(`<div class="sheet-bond-row sheet-bond-blank"><span>&nbsp;</span><span class="sheet-bond-score">&nbsp;</span></div>`);
+  const bondsHtml = filledBonds.join('');
 
   document.getElementById('sheet-output').innerHTML = `
   <div class="sheet-wrapper">
@@ -2694,7 +2698,7 @@ function renderSheet() {
       ${bondsHtml}
     </div>
 
-    <div class="sheet-section">
+    <div class="sheet-section sheet-skills-section">
       <div class="sheet-section-hdr">Skills &nbsp;|&nbsp; ★ = Profession Skill (green) &nbsp;|&nbsp; Blue % = modified from base</div>
       <div class="sheet-skills-grid">${skillsHtml}</div>
     </div>
