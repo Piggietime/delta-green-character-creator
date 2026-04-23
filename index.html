@@ -731,6 +731,9 @@
     /* Skills — compact in print so all rows fit on one page */
     .sheet-skills-grid { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; }
     .sheet-skill-item { border-right: 1px solid #ccc !important; border-bottom: 1px solid #ccc !important; padding: 3px 6px !important; font-size: 10.5px !important; gap: 3px !important; }
+    .sheet-skill-item:nth-child(3n) { border-right: none !important; }
+    .sheet-skill-item:last-child { border-right: none !important; border-bottom: none !important; }
+    .sheet-skill-item:nth-last-child(-n+3) { border-bottom: none !important; }
     .sheet-skill-check { border: 1px solid #555 !important; border-radius: 1px !important; width: 9px !important; height: 9px !important; display: inline-block !important; font-size: 8px !important; line-height: 9px !important; text-align: center !important; color: #2a6008 !important; }
     .sheet-skill-name { color: #333 !important; }
     .sheet-skill-val { color: #333 !important; }
