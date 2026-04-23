@@ -2410,13 +2410,16 @@ function editSkill(skill, delta) {
 function toggleTick(skill) {
   tickedSkills[skill] = !tickedSkills[skill];
   if(!tickedSkills[skill]) delete tickedSkills[skill];
-  // Update tick button without full re-render
+  const ticked = !!tickedSkills[skill];
+  // Update tick button in Skills tab
   const btn = document.querySelector(`[data-tick="${CSS.escape(skill)}"]`);
-  if(btn) {
-    const ticked = !!tickedSkills[skill];
-    btn.classList.toggle('ticked', ticked);
-    btn.textContent = ticked ? '✓' : '';
-  }
+  if(btn) { btn.classList.toggle('ticked', ticked); btn.textContent = ticked ? '✓' : ''; }
+  // Update play panel chip
+  const chip = document.getElementById('play-chip-' + skill.replace(/\s+/g, '-'));
+  if(chip) { chip.classList.toggle('checked', ticked); const box = chip.querySelector('.play-check-box'); if(box) box.textContent = ticked ? '✓' : ''; }
+  // Update sheet checkbox
+  const sheetCheck = document.getElementById('sheet-check-' + skill);
+  if(sheetCheck) sheetCheck.textContent = ticked ? '✓' : '';
   const tickCount = Object.values(tickedSkills).filter(Boolean).length;
   const levelUpBtn = document.querySelector('.levelup-btn');
   if(levelUpBtn) {
@@ -2938,16 +2941,18 @@ function playToggleTick(skill) {
     if(box) box.textContent = ticked ? '✓' : '';
   }
 
-  // Update sheet checkbox if sheet is rendered
+  // Update tick button in Skills tab
+  const tickBtn = document.querySelector(`[data-tick="${CSS.escape(skill)}"]`);
+  if(tickBtn) { tickBtn.classList.toggle('ticked', ticked); tickBtn.textContent = ticked ? '✓' : ''; }
+  // Update sheet checkbox
   const sheetCheck = document.getElementById('sheet-check-' + skill);
   if(sheetCheck) sheetCheck.textContent = ticked ? '✓' : '';
-
-  // Sync the improve button in the Skills tab
+  // Sync Level Up button
   const tickCount = Object.values(tickedSkills).filter(Boolean).length;
-  const improveBtn = document.getElementById('improve-btn');
-  if(improveBtn) {
-    improveBtn.disabled = tickCount === 0;
-    improveBtn.textContent = `↻ Roll Session Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)`;
+  const levelUpBtn = document.querySelector('.levelup-btn');
+  if(levelUpBtn) {
+    levelUpBtn.disabled = tickCount === 0;
+    levelUpBtn.textContent = `⬆ LEVEL UP — Roll Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)`;
   }
 }
 
