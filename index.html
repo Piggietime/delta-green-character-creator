@@ -898,6 +898,23 @@
   }
   .play-btn:hover { border-color: var(--green); color: var(--green); background: rgba(122,182,72,0.08); }
   .play-btn.active { border-color: var(--green); color: var(--green); background: rgba(122,182,72,0.12); }
+  .home-btn { background: transparent; border: 1px solid var(--text3); color: var(--text3); font-family: var(--mono); font-size: 10px; letter-spacing: 2px; padding: 5px 14px; cursor: pointer; text-transform: uppercase; }
+  .home-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(200,168,64,0.08); }
+  .home-btn.active { border-color: var(--amber); color: var(--amber); background: rgba(200,168,64,0.12); }
+  /* Home Scene Panel */
+  .home-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; overflow-y:auto; }
+  .home-overlay.open { display:block; }
+  .home-panel { background:var(--bg2); border-left:1px solid var(--border); width:420px; min-height:100vh; margin-left:auto; padding:1.5rem; box-sizing:border-box; }
+  .home-panel-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:1rem; }
+  .home-section { margin-bottom:1.5rem; border:1px solid var(--border); border-radius:3px; overflow:hidden; }
+  .home-section-hdr { background:var(--bg3); padding:8px 12px; font-family:var(--mono); font-size:10px; letter-spacing:2px; color:var(--amber); text-transform:uppercase; border-bottom:1px solid var(--border); }
+  .home-section-body { padding:12px; }
+  .home-apply-btn { font-family:var(--mono); font-size:10px; letter-spacing:1px; padding:6px 14px; background:var(--bg3); border:1px solid var(--amber); color:var(--amber); cursor:pointer; text-transform:uppercase; border-radius:2px; margin-top:8px; }
+  .home-apply-btn:hover { background:rgba(200,168,64,0.1); }
+  .home-select { font-family:var(--mono); font-size:11px; background:var(--bg3); color:var(--text2); border:1px solid var(--border); padding:5px 8px; border-radius:2px; width:100%; margin-top:6px; }
+  .home-result { font-family:var(--mono); font-size:11px; color:var(--green-bright); margin-top:8px; min-height:18px; }
+  .home-log { font-family:var(--mono); font-size:10px; color:var(--text3); border-top:1px solid var(--border); margin-top:1rem; padding-top:0.75rem; }
+  .home-log-entry { padding:3px 0; border-bottom:1px solid var(--border); color:var(--text2); }
   /* Play Panel */
   .play-overlay {
     display: none;
@@ -1214,8 +1231,60 @@
     <div class="dg-class">TOP SECRET // ORCON // SPECIAL ACCESS REQUIRED</div>
     <div class="header-btns">
       <button class="new-char-btn" onclick="newCharacter()">✦ New Agent</button>
+      <button class="home-btn" id="home-btn" onclick="toggleHomePanel()" style="display:none">⌂ Home Scene</button>
       <button class="play-btn" id="play-btn" onclick="togglePlayPanel()">▶ Play</button>
       <button class="load-btn" onclick="openLoadModal()">⬆ Load Agent</button>
+    </div>
+  </div>
+
+  <!-- Home Scene Overlay -->
+  <div id="home-overlay" class="home-overlay" onclick="if(event.target===this)toggleHomePanel()">
+    <div class="home-panel">
+      <div class="home-panel-hdr">
+        <span style="font-family:var(--head);font-size:18px;letter-spacing:2px;color:var(--amber)">⌂ HOME SCENE</span>
+        <button class="play-close-btn" onclick="toggleHomePanel()">✕</button>
+      </div>
+      <p style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:1.5rem;letter-spacing:1px;line-height:1.6">Between operations, an agent may: boost a stat by 1, train two skills (+10% each), or add a specialty. Choose one option per home scene.</p>
+
+      <!-- Stat Boost -->
+      <div class="home-section">
+        <div class="home-section-hdr">Option A — Stat Boost (+1 to one stat)</div>
+        <div class="home-section-body">
+          <select class="home-select" id="home-stat-select">
+            <option value="">— choose stat —</option>
+            <option value="STR">Strength (STR)</option>
+            <option value="CON">Constitution (CON)</option>
+            <option value="DEX">Dexterity (DEX)</option>
+            <option value="INT">Intelligence (INT)</option>
+            <option value="POW">Power (POW)</option>
+            <option value="CHA">Charisma (CHA)</option>
+          </select>
+          <button class="home-apply-btn" onclick="homeStatBoost()">Apply +1</button>
+          <div class="home-result" id="home-stat-result"></div>
+        </div>
+      </div>
+
+      <!-- Skill Training -->
+      <div class="home-section">
+        <div class="home-section-hdr">Option B — Skill Training (+10% to two skills)</div>
+        <div class="home-section-body">
+          <select class="home-select" id="home-skill1-select"><option value="">— first skill —</option></select>
+          <select class="home-select" id="home-skill2-select" style="margin-top:6px"><option value="">— second skill —</option></select>
+          <button class="home-apply-btn" onclick="homeSkillTrain()">Apply +10% to Both</button>
+          <div class="home-result" id="home-skill-result"></div>
+        </div>
+      </div>
+
+      <!-- Specialty -->
+      <div class="home-section">
+        <div class="home-section-hdr">Option C — Gain a Specialty</div>
+        <div class="home-section-body">
+          <p style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:6px">Go to the Skills tab and use the specialty dropdown on Art, Craft, Science, Military Science, or Pilot to set or update your focus.</p>
+        </div>
+      </div>
+
+      <!-- Log -->
+      <div id="home-log-container"></div>
     </div>
   </div>
 
@@ -1556,6 +1625,7 @@ let playFieldNotes   = '';
 let playSessionNotes = '';
 let playFieldOrganized   = '';
 let playSessionOrganized = '';
+let homeSceneLog = [];
 
 const WEAPONS_DB = [
   {name:'Glock 17 (9mm)',        skill:'Firearms',       range:'15m',  damage:'1D10',   ap:'—', lethality:'—', killRadius:'—', ammo:'17+1'},
@@ -2306,16 +2376,16 @@ function renderBonusSkills() {
         ${lastImprovementResults.map(r => `
           <div class="improvement-result-row">
             <span>${r.skill}</span>
-            <span class="result-roll">rolled ${r.roll} vs ${r.before}%</span>
-            ${r.gain > 0
-              ? `<span class="result-improved">+${r.gain} → ${r.after}%</span>`
-              : `<span class="result-failed">no change</span>`}
+            ${r.capped
+              ? `<span class="result-failed">already at 99% — no roll</span>`
+              : `<span class="result-roll">rolled 1d4: +${r.gain}</span>
+                 <span class="result-improved">${r.before}% → ${r.after}%</span>`}
           </div>`).join('')}
       </div>` : '';
 
     content.innerHTML = `
       <div class="section-title">Skills</div>
-      <p style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:1rem;letter-spacing:1px">Tick skills used successfully this session, then level up. ★ = profession skill.</p>
+      <p style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:1rem;letter-spacing:1px">Tick skills you <em>failed</em> a check on this session (Unnatural: tick on success). Each gains +1d4% at end of session. ★ = profession skill.</p>
       <button class="levelup-btn" onclick="levelUp()" ${tickCount===0?'disabled':''}>⬆ LEVEL UP — Roll Improvements (${tickCount} skill${tickCount!==1?'s':''} marked)</button>
       <div class="skills-header skills-header-edit" style="margin-top:1rem">
         <span style="text-align:center">Tick</span><span>Skill</span><span style="text-align:center">Base</span><span style="text-align:center">Total</span><span style="text-align:center">Adjust</span>
@@ -2430,8 +2500,8 @@ function toggleTick(skill) {
 
 function levelUp() {
   const tickCount = Object.values(tickedSkills).filter(Boolean).length;
-  if(tickCount === 0) { alert('No skills are ticked. Use the checkboxes to mark skills used this session first.'); return; }
-  if(!confirm(`Roll improvements for ${tickCount} ticked skill${tickCount!==1?'s':''}?\n\nEach skill rolls d100 — if the roll beats your current %, you gain 1d6 points. This cannot be undone.`)) return;
+  if(tickCount === 0) { alert('No skills are ticked. Check the box next to any skill you failed a check on this session.'); return; }
+  if(!confirm(`Roll end-of-session improvements for ${tickCount} skill${tickCount!==1?'s':''}?\n\nEach failed skill gains +1d4%. Unnatural advances +1d4% on a success instead. Skills cap at 99%. This cannot be undone.`)) return;
   rollImprovements();
 }
 
@@ -2439,21 +2509,17 @@ function rollImprovements() {
   const results = [];
   Object.keys(tickedSkills).filter(s => tickedSkills[s]).forEach(sname => {
     const before = getSkillTotal(sname);
-    const roll = Math.ceil(Math.random() * 100);
-    if(roll > before && before < 99) {
-      const gain = Math.ceil(Math.random() * 6);
-      const after = Math.min(99, before + gain);
-      const ps = getProfSkills();
-      const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
-      const pv = ps[sname] || 0;
-      const added = bonusAdded[sname] || 0;
-      const baseTotal = (pv > 0 ? pv : base) + added * 20;
-      skillEdits[sname] = after - baseTotal;
-      if(skillEdits[sname] === 0) delete skillEdits[sname];
-      results.push({skill: sname, roll, before, gain, after});
-    } else {
-      results.push({skill: sname, roll, before, gain: 0, after: before});
-    }
+    if(before >= 99) { results.push({skill: sname, before, gain: 0, after: before, capped: true}); return; }
+    const gain = Math.ceil(Math.random() * 4); // 1d4
+    const after = Math.min(99, before + gain);
+    const ps = getProfSkills();
+    const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
+    const pv = ps[sname] || 0;
+    const added = bonusAdded[sname] || 0;
+    const baseTotal = (pv > 0 ? pv : base) + added * 20;
+    skillEdits[sname] = after - baseTotal;
+    if(skillEdits[sname] === 0) delete skillEdits[sname];
+    results.push({skill: sname, before, gain, after});
   });
   tickedSkills = {};
   lastImprovementResults = results;
@@ -2777,6 +2843,79 @@ function togglePlayPanel() {
   const isOpen  = overlay.classList.toggle('open');
   btn.classList.toggle('active', isOpen);
   if(isOpen) renderPlayPanel();
+}
+
+// ── Home Scene ──────────────────────────
+function toggleHomePanel() {
+  const overlay = document.getElementById('home-overlay');
+  const btn     = document.getElementById('home-btn');
+  const isOpen  = overlay.classList.toggle('open');
+  btn.classList.toggle('active', isOpen);
+  if(isOpen) renderHomePanel();
+}
+
+function renderHomePanel() {
+  // Populate skill dropdowns with all current skills
+  const ps = getProfSkills();
+  const allNames = [...new Set([...ALL_SKILLS.map(s=>s.name),...Object.keys(ps)])].sort();
+  const opts = allNames.map(n => `<option value="${n}">${n} (${getSkillTotal(n)}%)</option>`).join('');
+  ['home-skill1-select','home-skill2-select'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) { const cur = el.value; el.innerHTML = `<option value="">— choose skill —</option>${opts}`; if(cur) el.value = cur; }
+  });
+  renderHomeLog();
+}
+
+function renderHomeLog() {
+  const el = document.getElementById('home-log-container');
+  if(!el) return;
+  if(!homeSceneLog.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="home-log">
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">HOME SCENE LOG</div>
+    ${homeSceneLog.slice().reverse().map(e => `<div class="home-log-entry">${e}</div>`).join('')}
+  </div>`;
+}
+
+function homeStatBoost() {
+  const stat = document.getElementById('home-stat-select').value;
+  if(!stat) { document.getElementById('home-stat-result').textContent = 'Select a stat first.'; return; }
+  stats[stat] = Math.min(18, (stats[stat] || 10) + 1);
+  const entry = `${new Date().toLocaleDateString()} — Stat boost: ${stat} → ${stats[stat]}`;
+  homeSceneLog.push(entry);
+  updateDerived();
+  document.getElementById('home-stat-result').textContent = `${stat} is now ${stats[stat]}.`;
+  document.getElementById('home-stat-select').value = '';
+  renderHomeLog();
+  saveCharacter(null, true);
+}
+
+function homeSkillTrain() {
+  const s1 = document.getElementById('home-skill1-select').value;
+  const s2 = document.getElementById('home-skill2-select').value;
+  const result = document.getElementById('home-skill-result');
+  if(!s1 || !s2) { result.textContent = 'Select two skills.'; return; }
+  if(s1 === s2) { result.textContent = 'Choose two different skills.'; return; }
+  [s1, s2].forEach(sname => {
+    const cur = getSkillTotal(sname);
+    if(cur >= 99) return;
+    const ps = getProfSkills();
+    const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
+    const pv = ps[sname] || 0;
+    const added = bonusAdded[sname] || 0;
+    const baseTotal = (pv > 0 ? pv : base) + added * 20;
+    skillEdits[sname] = Math.min(99, cur + 10) - baseTotal;
+    if(skillEdits[sname] === 0) delete skillEdits[sname];
+  });
+  const t1 = getSkillTotal(s1), t2 = getSkillTotal(s2);
+  const entry = `${new Date().toLocaleDateString()} — Skill training: ${s1} → ${t1}%, ${s2} → ${t2}%`;
+  homeSceneLog.push(entry);
+  result.textContent = `${s1} → ${t1}%, ${s2} → ${t2}%`;
+  document.getElementById('home-skill1-select').value = '';
+  document.getElementById('home-skill2-select').value = '';
+  renderHomeLog();
+  renderBonusSkills();
+  renderSheet();
+  saveCharacter(null, true);
 }
 
 function renderPlayPanel() {
@@ -3198,6 +3337,7 @@ function newCharacter() {
   playSessionNotes     = '';
   playFieldOrganized   = '';
   playSessionOrganized = '';
+  homeSceneLog         = [];
   renderPortraitPreview();
   renderPlayPanel();
   ['p-name','p-prof-title','p-employer','p-dob','p-edu','p-height','p-hair','p-eyes','p-complexion','p-phys'].forEach(id => {
@@ -3207,19 +3347,18 @@ function newCharacter() {
   document.getElementById('p-nationality').value = 'American';
   document.getElementById('p-sex').value = 'F';
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Bonus Skills';
+  document.getElementById('home-btn').style.display = 'none';
   goStep(0);
 }
 
 // ── Save / Load ──────────────────────────
-function saveCharacter(btn) {
+function saveCharacter(btn, silent=false) {
   const name = document.getElementById('p-name').value.trim() || 'Unnamed Agent';
   const saves = JSON.parse(localStorage.getItem('dg_characters') || '{}');
-  if(saves[name] && !confirm(`"${name}" is already saved. Overwrite?`)) return;
+  if(!silent && saves[name] && !confirm(`"${name}" is already saved. Overwrite?`)) return;
   saves[name] = { ...buildCharData(), savedAt: new Date().toISOString() };
   localStorage.setItem('dg_characters', JSON.stringify(saves));
-  const orig = btn.textContent;
-  btn.textContent = '✓ SAVED';
-  setTimeout(() => { btn.textContent = orig; }, 1500);
+  if(btn) { const orig = btn.textContent; btn.textContent = '✓ SAVED'; setTimeout(() => { btn.textContent = orig; }, 1500); }
 }
 
 function openLoadModal() {
@@ -3294,8 +3433,10 @@ function loadCharacter(name) {
   playSessionNotes     = c.playSessionNotes || '';
   playFieldOrganized   = c.playFieldOrganized   || '';
   playSessionOrganized = c.playSessionOrganized || '';
+  homeSceneLog         = [...(c.homeSceneLog || [])];
   renderPlayPanel();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
+  document.getElementById('home-btn').style.display = '';
   closeLoadModal();
   goStep(6);
 }
@@ -3365,6 +3506,7 @@ function importFromJSON(input) {
       playSessionOrganized = c.playSessionOrganized || '';
       renderPlayPanel();
       document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
+  document.getElementById('home-btn').style.display = '';
       input.value = '';
       closeLoadModal();
       goStep(6);
@@ -3412,6 +3554,7 @@ function buildCharData() {
     playSessionNotes,
     playFieldOrganized,
     playSessionOrganized,
+    homeSceneLog: [...homeSceneLog],
   };
 }
 
@@ -3490,8 +3633,10 @@ function importSharedChar() {
   playSessionNotes     = c.playSessionNotes || '';
   playFieldOrganized   = c.playFieldOrganized   || '';
   playSessionOrganized = c.playSessionOrganized || '';
+  homeSceneLog         = [...(c.homeSceneLog || [])];
   renderPlayPanel();
   document.getElementById('step-btn-bonus').innerHTML = '<span class="step-num">05</span>Skills';
+  document.getElementById('home-btn').style.display = '';
   dismissImportBanner();
   goStep(6);
 }
