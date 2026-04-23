@@ -2881,12 +2881,24 @@ function renderHomePanel() {
     </div>
 
     <div class="home-section">
-      <div class="home-section-hdr">Improve Skills (Training)</div>
+      <div class="home-section-hdr">Improve Skills or Stats (Training)</div>
       <div class="home-section-body">
-        <p class="home-desc">Study or practice. No roll required. Add +10% to two skills.</p>
-        <select class="home-select" id="home-skill1-select"><option value="">— first skill —</option>${skillOpts}</select>
-        <select class="home-select" id="home-skill2-select" style="margin-top:6px"><option value="">— second skill —</option>${skillOpts}</select>
-        <button class="home-apply-btn" onclick="homeSkillTrain()">Apply +10% to Both</button>
+        <p class="home-desc">Train two skills/stats (or one of each). Roll the skill% or stat×5. If the test <em>fails</em>, gain +3d6% (skill, max 99%) or +1 (stat, max 18). Each improvement costs −1 to a Bond (not a Delta Green bond).</p>
+        ${['1','2'].map(n => `
+        <div style="border:1px solid var(--border);padding:8px;margin-bottom:8px;border-radius:2px">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:6px">SLOT ${n}</div>
+          <select class="home-select" id="home-train${n}" style="margin-bottom:6px">
+            <option value="">— choose skill or stat —</option>
+            <optgroup label="Stats">
+              ${['STR','CON','DEX','INT','POW','CHA'].map(s=>`<option value="stat:${s}">${s} (current: ${stats[s]}, roll ≤ ${stats[s]*5}%)</option>`).join('')}
+            </optgroup>
+            <optgroup label="Skills">
+              ${skillOpts}
+            </optgroup>
+          </select>
+          ${hasBonds ? `<select class="home-select" id="home-train${n}-bond"><option value="">— bond reduced on success —</option>${bondOpts}</select>` : '<p class="home-desc" style="color:var(--red);margin-top:4px">No bonds to reduce.</p>'}
+        </div>`).join('')}
+        <button class="home-apply-btn" onclick="homeSkillTrain()">Roll Training (d100)</button>
         <div class="home-result" id="home-skill-result"></div>
       </div>
     </div>
@@ -3054,25 +3066,63 @@ function homeNewBond() {
 }
 
 function homeSkillTrain() {
-  const s1 = document.getElementById('home-skill1-select').value;
-  const s2 = document.getElementById('home-skill2-select').value;
   const result = document.getElementById('home-skill-result');
-  if(!s1 || !s2) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Select two skills.</div>'; return; }
-  if(s1 === s2) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Choose two different skills.</div>'; return; }
-  [s1, s2].forEach(sname => {
-    const cur = getSkillTotal(sname);
-    if(cur >= 99) return;
-    const ps = getProfSkills();
-    const base = ALL_SKILLS.find(s=>s.name===sname)?.base ?? 0;
-    const pv = ps[sname] || 0;
-    const added = bonusAdded[sname] || 0;
-    skillEdits[sname] = Math.min(99, cur + 10) - ((pv > 0 ? pv : base) + added * 20);
-    if(skillEdits[sname] === 0) delete skillEdits[sname];
+  const slots = [
+    { trainVal: document.getElementById('home-train1')?.value, bondVal: document.getElementById('home-train1-bond')?.value ?? '' },
+    { trainVal: document.getElementById('home-train2')?.value, bondVal: document.getElementById('home-train2-bond')?.value ?? '' }
+  ].filter(s => s.trainVal);
+  if(slots.length === 0) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Choose at least one skill or stat to train.</div>'; return; }
+  if(slots.length === 2 && slots[0].trainVal === slots[1].trainVal) { result.innerHTML = '<div class="home-desc" style="color:var(--red)">Choose two different skills/stats.</div>'; return; }
+
+  let html = '';
+  const logParts = [];
+
+  slots.forEach(({ trainVal, bondVal }, idx) => {
+    const isStat = trainVal.startsWith('stat:');
+    const name   = trainVal.replace(/^(stat|skill):/, '');
+    const target = isStat ? stats[name] * 5 : getSkillTotal(name);
+    const roll   = Math.ceil(Math.random() * 100);
+    const failed = roll > target; // fail the test = improvement
+
+    let lineHtml = `<strong>Slot ${idx+1}:</strong> ${name} — rolled ${roll} vs ${target}% — `;
+
+    if(failed) {
+      if(isStat) {
+        if(stats[name] >= 18) {
+          lineHtml += `<span style="color:var(--text3)">already at max (18), no gain.</span>`;
+        } else {
+          stats[name] = Math.min(18, stats[name] + 1);
+          lineHtml += `<span style="color:var(--green)">test failed → +1 ${name} (now ${stats[name]})</span>`;
+          if(bondVal !== '') homeBondAdjust(parseInt(bondVal), -1);
+          logParts.push(`${name} → ${stats[name]}`);
+        }
+      } else {
+        const cur = getSkillTotal(name);
+        if(cur >= 99) {
+          lineHtml += `<span style="color:var(--text3)">already at 99%, no gain.</span>`;
+        } else {
+          const gain = Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6) + Math.ceil(Math.random()*6);
+          const ps   = getProfSkills();
+          const base = ALL_SKILLS.find(s=>s.name===name)?.base ?? 0;
+          const pv   = ps[name] || 0;
+          const added = bonusAdded[name] || 0;
+          const newTotal = Math.min(99, cur + gain);
+          skillEdits[name] = newTotal - ((pv > 0 ? pv : base) + added * 20);
+          if(skillEdits[name] === 0) delete skillEdits[name];
+          lineHtml += `<span style="color:var(--green)">test failed → +${gain}% (${cur}% → ${newTotal}%)</span>`;
+          if(bondVal !== '') homeBondAdjust(parseInt(bondVal), -1);
+          logParts.push(`${name} → ${newTotal}%`);
+        }
+      }
+    } else {
+      lineHtml += `<span style="color:var(--text3)">test passed — no improvement.</span>`;
+    }
+    html += `<div class="home-desc" style="margin-bottom:4px">${lineHtml}</div>`;
   });
-  const t1 = getSkillTotal(s1), t2 = getSkillTotal(s2);
-  homeSceneLog.push(`${new Date().toLocaleDateString()} — Skill training: ${s1} → ${t1}%, ${s2} → ${t2}%`);
-  result.innerHTML = `<div class="home-desc" style="color:var(--green)">${s1} → ${t1}%, ${s2} → ${t2}%</div>`;
-  renderHomeLog(); renderBonusSkills(); renderSheet(); saveCharacter(null, true);
+
+  result.innerHTML = html;
+  if(logParts.length) homeSceneLog.push(`${new Date().toLocaleDateString()} — Training: ${logParts.join(', ')}`);
+  renderHomeLog(); renderBonusSkills(); updateDerived(); renderSheet(); saveCharacter(null, true);
 }
 
 function renderPlayPanel() {
