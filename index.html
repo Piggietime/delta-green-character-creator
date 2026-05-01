@@ -679,7 +679,7 @@
     body { background: white !important; color: #111 !important; }
     body::before { display: none !important; }
     .dg-header { display: none !important; }
-    .step-nav, .nav-btns, .print-btn, .array-btns, .save-btn, .share-btn, .import-banner { display: none !important; }
+    .step-nav, .nav-btns, .print-btn, .array-btns, .save-btn, .share-btn, .import-banner, .help-panel, .guide-btn { display: none !important; }
     .panel { display: none !important; }
     #panel6 { display: block !important; }
     .app-wrapper { padding: 0 !important; max-width: 100% !important; }
@@ -840,6 +840,76 @@
     text-transform: uppercase;
   }
   .new-char-btn:hover { border-color: var(--red); color: var(--red); background: rgba(192,64,64,0.08); }
+
+  /* ── New Player Guide button ── */
+  .guide-btn {
+    background: transparent;
+    border: 1px solid var(--text3);
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all .2s;
+  }
+  .guide-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(200,168,64,0.08); }
+  .guide-btn.active { border-color: var(--amber); color: var(--amber); background: rgba(200,168,64,0.1); }
+
+  /* ── New Player Help Panels ── */
+  .help-panel {
+    display: none;
+    background: rgba(200,168,64,0.06);
+    border: 1px solid rgba(200,168,64,0.25);
+    border-left: 3px solid var(--amber);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 1.25rem;
+  }
+  .help-panel.visible { display: block; }
+  .help-panel-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .help-panel-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    text-transform: uppercase;
+  }
+  .help-panel-toggle {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    opacity: 0.6;
+  }
+  .help-panel-body {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+  .help-panel-body p { margin-bottom: 8px; }
+  .help-panel-body p:last-child { margin-bottom: 0; }
+  .help-panel-body strong { color: var(--text); font-weight: 600; }
+  .help-panel-body .help-rule {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(200,168,64,0.1);
+  }
+  .help-panel-body .help-rule:last-child { border-bottom: none; }
+  .help-rule-lbl { font-family: var(--mono); font-size: 10px; color: var(--amber); min-width: 80px; letter-spacing: 1px; padding-top: 2px; }
+  .help-rule-val { font-size: 13px; color: var(--text2); }
+  .help-panel.collapsed .help-panel-body { display: none; }
+  .help-panel.collapsed .help-panel-toggle::before { content: '▸ EXPAND'; }
+  .help-panel:not(.collapsed) .help-panel-toggle::before { content: '▾ COLLAPSE'; }
 
   /* ── Bond edit row ── */
   .bond-row-edit { grid-template-columns: 1fr auto; }
@@ -1242,6 +1312,7 @@
     <div class="dg-subtitle">AGENT DOCUMENTATION SYSTEM</div>
     <div class="dg-class">TOP SECRET // ORCON // SPECIAL ACCESS REQUIRED</div>
     <div class="header-btns">
+      <button class="guide-btn" id="guide-btn" onclick="toggleGuide()">? New Player Guide</button>
       <button class="new-char-btn" onclick="newCharacter()">✦ New Agent</button>
       <button class="play-btn" id="play-btn" onclick="togglePlayPanel()">▶ Play</button>
       <button class="load-btn" onclick="openLoadModal()">⬆ Load Agent</button>
@@ -1389,6 +1460,18 @@
 
   <!-- PANEL 0: Personal -->
   <div id="panel0" class="panel active">
+    <div class="help-panel" id="help0">
+      <div class="help-panel-hdr" onclick="toggleHelpCollapse(this)">
+        <span class="help-panel-title">▸ Step 1 — Personal Data</span>
+        <span class="help-panel-toggle"></span>
+      </div>
+      <div class="help-panel-body">
+        <p><strong>Who is your agent?</strong> Delta Green is a secret government conspiracy that recruits federal agents, soldiers, scientists, and other professionals to investigate and suppress the supernatural. Your agent is one of these people — they have a normal cover identity and a real, dangerous job.</p>
+        <p>Fill in the basics: name, employer (FBI, CDC, US Army, etc.), age, and physical appearance. None of these fields affect game mechanics — they exist so your agent feels like a real person and so the Handler (GM) can describe them to the table.</p>
+        <p>The <strong>Education &amp; Occupational History</strong> field is where you sketch your agent's background — military service, medical training, time in the field. Keep it to two or three sentences. You'll choose a formal Profession in the next step, and these fields should be consistent with that choice.</p>
+        <p>The <strong>Agent Portrait</strong> is optional. Use the AI prompt tool to generate a description you can paste into an image generator like Ideogram, then upload the result. The portrait appears on your printed sheet.</p>
+      </div>
+    </div>
     <div class="section-title">Personal Data</div>
     <div class="grid2">
       <div class="field-group"><label>Last Name, First Name, M.I.</label><input type="text" id="p-name" placeholder="MORGAN, James R."></div>
@@ -1433,6 +1516,18 @@
 
   <!-- PANEL 1: Profession -->
   <div id="panel1" class="panel">
+    <div class="help-panel" id="help1">
+      <div class="help-panel-hdr" onclick="toggleHelpCollapse(this)">
+        <span class="help-panel-title">▸ Step 2 — Profession</span>
+        <span class="help-panel-toggle"></span>
+      </div>
+      <div class="help-panel-body">
+        <p><strong>Your profession defines your skill package.</strong> Each profession comes with a set of skills your agent is trained in, plus the number of Bonds they maintain. Choosing a profession is the single biggest mechanical decision you make — it shapes what your agent is good at.</p>
+        <p><strong>Skills</strong> are percentages (e.g., Firearms 40%). When the game calls for a skill check, you roll 1D100 — roll equal to or under the skill to succeed. <em>Half the skill</em> is a Hard success; <em>one-fifth</em> is an Extreme success. Higher is better.</p>
+        <p><strong>Bonds</strong> are people your agent is close to — a spouse, a sibling, a best friend from the academy. Each bond starts at your Charisma score. You'll define them in the next step. The more bonds a profession gives, the more human connections your agent has to lose.</p>
+        <p>Some professions have an optional skill choice — you'll see checkboxes to pick between alternatives. Choose what fits your concept. You can always refine in the Bonus Skills step.</p>
+      </div>
+    </div>
     <div class="section-title">Choose a Profession</div>
     <div class="prof-grid" id="prof-list"></div>
     <div id="prof-choices"></div>
@@ -1444,6 +1539,26 @@
 
   <!-- PANEL 2: Statistics -->
   <div id="panel2" class="panel">
+    <div class="help-panel" id="help2">
+      <div class="help-panel-hdr" onclick="toggleHelpCollapse(this)">
+        <span class="help-panel-title">▸ Step 3 — Statistics</span>
+        <span class="help-panel-toggle"></span>
+      </div>
+      <div class="help-panel-body">
+        <p><strong>Your agent has six statistics, each rated 3–18.</strong> You have 72 points to distribute across all six — the same total as rolling 4D6 drop-lowest six times. Use the Quick Assign buttons for a preset spread, or click Roll to randomise.</p>
+        <div class="help-rule"><span class="help-rule-lbl">STR</span><span class="help-rule-val"><strong>Strength</strong> — physical power. Melee attacks, forced entry, carrying capacity.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">CON</span><span class="help-rule-val"><strong>Constitution</strong> — resilience and endurance. Affects Hit Points.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">DEX</span><span class="help-rule-val"><strong>Dexterity</strong> — speed and coordination. Dodge, ranged attacks, fine motor tasks.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">INT</span><span class="help-rule-val"><strong>Intelligence</strong> — perception and reasoning. Research, spot hidden things, solve problems.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">POW</span><span class="help-rule-val"><strong>Power</strong> — willpower and psychic resistance. Affects Sanity, Willpower Points, and Breaking Point.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">CHA</span><span class="help-rule-val"><strong>Charisma</strong> — social presence. Persuasion, leadership, and starting Bond scores.</span></div>
+        <p style="margin-top:10px"><strong>Derived attributes</strong> are calculated automatically from your stats:</p>
+        <div class="help-rule"><span class="help-rule-lbl">HP</span><span class="help-rule-val">(STR + CON) ÷ 2, rounded up. How much physical damage you can take.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">WP</span><span class="help-rule-val">= POW. Willpower Points, spent on rituals and some special actions.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">SAN</span><span class="help-rule-val">= POW × 5. Sanity — how much psychological trauma you can absorb. Lost when encountering the unnatural.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">BP</span><span class="help-rule-val">= POW × 4. Breaking Point — if SAN falls below this, your agent suffers a temporary disorder.</span></div>
+      </div>
+    </div>
     <div class="section-title">Primary Statistics</div>
     <div id="stat-hint"></div>
     <div class="pts-bar">
@@ -1474,6 +1589,18 @@
 
   <!-- PANEL 3: Bonds -->
   <div id="panel3" class="panel">
+    <div class="help-panel" id="help3">
+      <div class="help-panel-hdr" onclick="toggleHelpCollapse(this)">
+        <span class="help-panel-title">▸ Step 4 — Bonds</span>
+        <span class="help-panel-toggle"></span>
+      </div>
+      <div class="help-panel-body">
+        <p><strong>Bonds are the people your agent cares about most.</strong> They are the human anchors that keep your agent grounded as the horrors of Delta Green work erodes their sanity. Bonds can be individual people (spouse, sibling, old partner) or institutions (a unit, a congregation, a tight-knit team).</p>
+        <p>Each bond starts with a score equal to your <strong>Charisma (CHA)</strong> stat. The number of bonds you have is set by your profession — most agents have 2–4.</p>
+        <p><strong>In play:</strong> when your agent loses Sanity, one of their bonds may be strained or broken. If a bond score reaches 0, that relationship is gone — the person has been pushed away, has died, or simply can't tolerate the agent's changed behaviour any longer. Bonds can also be called on to restore a small amount of sanity during downtime.</p>
+        <p>For each bond, write a name and a brief description of who they are. "Sarah Morgan, younger sister" or "Sgt. Dale Kimura, Army squad-mate" is enough. The more specific and personal you make them, the more meaningful it is when something happens to them.</p>
+      </div>
+    </div>
     <div class="section-title">Define Bonds</div>
     <p style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:1rem;letter-spacing:1px">Each bond starts equal to your CHARISMA score. Bonds represent meaningful connections to people or groups.</p>
     <div id="bonds-container"></div>
@@ -1485,6 +1612,22 @@
 
   <!-- PANEL 4: Bonus Skills / Skills -->
   <div id="panel4" class="panel">
+    <div class="help-panel" id="help4">
+      <div class="help-panel-hdr" onclick="toggleHelpCollapse(this)">
+        <span class="help-panel-title">▸ Step 5 — Bonus Skills</span>
+        <span class="help-panel-toggle"></span>
+      </div>
+      <div class="help-panel-body">
+        <p><strong>Every agent gets 8 bonus skill points to personalise their character.</strong> Each point adds +20% to any skill on the list. You can stack multiple points on the same skill, but no skill can exceed 80% through bonus points alone.</p>
+        <p>Your <strong>profession skills</strong> are shown highlighted — they are already part of your package and are tracked separately. Bonus points can go onto profession skills to make you exceptional at something your profession already covers, or onto any other skill to fill a gap.</p>
+        <p><strong>Skill ratings in play:</strong></p>
+        <div class="help-rule"><span class="help-rule-lbl">Regular</span><span class="help-rule-val">Roll 1D100 equal to or under your skill — you succeed.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">Hard</span><span class="help-rule-val">Roll under half your skill — used when circumstances are tough.</span></div>
+        <div class="help-rule"><span class="help-rule-lbl">Extreme</span><span class="help-rule-val">Roll under one-fifth your skill — nearly impossible, but remarkable when it happens.</span></div>
+        <p style="margin-top:8px">Skills also improve through play: when you fail a skill check, the Handler may award a tick. At the end of a session, roll 1D100 over the current skill — if you succeed, it goes up by 1D6. <em>Failing is how agents improve.</em></p>
+        <p>Pick skills that fit who your agent is and what situations you want them to handle. First responders might add Medicine; intelligence analysts might add SIGINT or Foreign Language; a survivalist might stack Survival or Firearms.</p>
+      </div>
+    </div>
     <div id="bonus-panel-content"></div>
     <div class="nav-btns">
       <button class="nav-btn" onclick="goStep(3)">← BACK</button>
@@ -1494,6 +1637,19 @@
 
   <!-- PANEL 5: Equipment -->
   <div id="panel5" class="panel">
+    <div class="help-panel" id="help5">
+      <div class="help-panel-hdr" onclick="toggleHelpCollapse(this)">
+        <span class="help-panel-title">▸ Step 6 — Equipment</span>
+        <span class="help-panel-toggle"></span>
+      </div>
+      <div class="help-panel-body">
+        <p><strong>Agents go into the field armed and equipped.</strong> Delta Green operates in the shadows — agents use their existing professional credentials to carry service weapons and requisition gear through official channels. No one is openly buying supernatural monster-hunting supplies.</p>
+        <p><strong>Weapons:</strong> Select from the catalog. Federal agents and military personnel generally carry sidearms as a matter of course; rifles and shotguns require more explanation. Unusual or heavy weapons may draw scrutiny — your Handler will let you know what flies for your cover.</p>
+        <p><strong>Field gear</strong> is the practical kit your agent has on them: flashlight, restraints, medical supplies, evidence bags, radio. Think about what your agent's employer would realistically issue or allow.</p>
+        <p><strong>In play:</strong> when you fire a weapon, roll your Firearms skill (or Melee for blades). On a success, roll the weapon's Damage dice. Lethality weapons (marked with a %) roll 1D100 against the Lethality rating — a success kills instantly. On a miss, the weapon does its listed base damage. Armor reduces damage by its rating.</p>
+        <p>You don't need to account for every round of ammunition in most sessions — track it only if your Handler calls for realistic supply management. The Ammo field on the sheet is for reference.</p>
+      </div>
+    </div>
     <div class="section-title">Equipment</div>
     <p style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:1.5rem;letter-spacing:1px">Select weapons and gear your agent is carrying into the field.</p>
 
@@ -1592,6 +1748,7 @@ let bondScores  = [];
 let tickedSkills = {};
 let lastImprovementResults = null;
 let portraitData     = null;
+let guidedMode       = false;
 let playFieldNotes   = '';
 let playSessionNotes = '';
 let playFieldOrganized   = '';
@@ -2014,6 +2171,19 @@ const PROFESSIONS = {
     choices:[]
   }
 };
+
+function toggleGuide() {
+  guidedMode = !guidedMode;
+  const btn = document.getElementById('guide-btn');
+  btn.classList.toggle('active', guidedMode);
+  document.querySelectorAll('.help-panel').forEach(p => {
+    p.classList.toggle('visible', guidedMode);
+  });
+}
+
+function toggleHelpCollapse(el) {
+  el.closest('.help-panel').classList.toggle('collapsed');
+}
 
 function goStep(n) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
